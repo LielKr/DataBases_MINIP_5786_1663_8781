@@ -23,5 +23,12 @@ This database system is designed to manage hotel reservations and front office o
 
 The system uses foreign keys, weak entities, and entity relationships to maintain data consistency, avoid redundancy, and accurately represent the main processes of hotel reservation management.
 
-🗂️ ERD and DSD Diagrams
+## 📁 ERD and DSD Diagrams
 
+### ERD
+
+![ERD Diagram](images/erdplus-ERD.png)
+
+### DSD
+
+![DSD Diagram](images//erdplus-DSD.png)
