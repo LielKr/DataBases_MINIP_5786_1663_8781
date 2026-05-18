@@ -286,26 +286,6 @@ The system uses foreign keys, weak entities, and entity relationships to maintai
 | `BOOKINGS` ↔ `ROOMS` | M:N | קשר רבים לרבים הממומש באמצעות `ROOM_ASSIGNMENTS` |
 | `BOOKINGS` → `CHECK_INS_OUTS` | 1:1 | לכל הזמנה יכולה להיות רשומת כניסה ויציאה בפועל |
 
----
-
-## תרשים קשרים כללי
-
-```text
-GUESTS ──────────────────────────────────────────────┐
-  אורח אחד → הזמנות רבות                            │
-                                                     ↓
-                                                  BOOKINGS ──── CHECK_INS_OUTS
-BOOKING_SOURCES ─────────────────────────────────────↑          ישות חלשה
-  מקור אחד → הזמנות רבות                            │
-                                                     │
-                                                     ↓
-                                               ROOM_ASSIGNMENTS
-                                               ישות מקשרת M:N
-                                                     ↑
-                                                     │
-ROOM_TYPES ──────── ROOMS ───────────────────────────┘
-  סוג אחד → חדרים רבים
-
 
 
 
