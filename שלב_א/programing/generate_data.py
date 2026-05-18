@@ -1,7 +1,7 @@
 # generate_data.py
 # תלויות: pip install faker
-# הרצה: python generate_data.py
-# פלט: insertTables_python.sql
+# הרצה:   python generate_data.py
+# פלט:    insertTables_python.sql
 
 import random
 from datetime import date, timedelta
@@ -37,10 +37,12 @@ EXISTING_ROOM_IDS   = {
     701,702,703,704,
     801,802,803,804
 }
-EXISTING_GUEST_IDS    = set(range(1, 21))
-EXISTING_BOOKING_IDS  = set(range(1001, 1026))
-EXISTING_ASSIGN_IDS   = set(range(1, 26))
-EXISTING_CHECKIN_IDS  = set(range(1, 16))
+EXISTING_GUEST_IDS        = set(range(1, 21))
+EXISTING_BOOKING_IDS      = set(range(1001, 1026))
+EXISTING_ASSIGN_IDS       = set(range(1, 26))
+EXISTING_CHECKIN_IDS      = set(range(1, 16))
+EXISTING_CHECKIN_BOOKINGS = set(range(1001, 1016))
+
 
 # ============================================================
 # פונקציות עזר
@@ -52,6 +54,12 @@ def write_section(f, title: str):
     f.write(f"\n-- {'='*60}\n")
     f.write(f"-- {title}\n")
     f.write(f"-- {'='*60}\n\n")
+
+def flush_rows(f, sql_header: str, rows: list):
+    if rows:
+        f.write(sql_header + "\n")
+        f.write(",\n".join(rows) + ";\n\n")
+
 
 # ============================================================
 # יצירת הקובץ
@@ -67,91 +75,84 @@ with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
     # ----------------------------------------------------------
     write_section(f, "ROOMS")
 
-    statuses = ['AVAILABLE', 'AVAILABLE', 'AVAILABLE', 'OCCUPIED', 'MAINTENANCE']
-    room_id  = 1000
+    statuses     = ['AVAILABLE', 'AVAILABLE', 'AVAILABLE', 'OCCUPIED', 'MAINTENANCE']
+    room_id      = 1000
     all_room_ids = list(EXISTING_ROOM_IDS)
+    rows         = []
 
-    rows = []
     for _ in range(NUM_ROOMS):
         while room_id in EXISTING_ROOM_IDS:
             room_id += 1
         floor  = random.randint(1, 15)
         status = random.choice(statuses)
-        ext    = str(room_id)
         t_id   = random.choice(EXISTING_TYPE_IDS)
-        rows.append(
-            f"({room_id}, {floor}, '{status}', '{ext}', {t_id})"
-        )
+        rows.append(f"({room_id}, {floor}, '{status}', '{room_id}', {t_id})")
         all_room_ids.append(room_id)
         room_id += 1
 
-    f.write("INSERT INTO ROOMS (room_id, floor, physical_status, phone_extension, type_id) VALUES\n")
-    f.write(",\n".join(rows) + ";\n")
+    flush_rows(f,
+        "INSERT INTO ROOMS (room_id, floor, physical_status, phone_extension, type_id) VALUES",
+        rows)
 
     # ----------------------------------------------------------
-    # GUESTS – 19,980 רשומות
+    # GUESTS – 19,980 רשומות (בחבילות של 500)
     # ----------------------------------------------------------
     write_section(f, "GUESTS")
 
-    guest_id  = 1000
-    all_guest_ids = list(EXISTING_GUEST_IDS)
+    GUEST_SQL      = "INSERT INTO GUESTS (guest_id, first_name, last_name, passport_number, phone, email, registration_date) VALUES"
+    guest_id       = 1000
+    all_guest_ids  = list(EXISTING_GUEST_IDS)
     used_passports = set()
     used_emails    = set()
+    rows           = []
+    count          = 0
 
-    rows = []
-    count = 0
     while count < NUM_GUESTS:
         while guest_id in EXISTING_GUEST_IDS:
             guest_id += 1
 
-        first = fake.first_name()
-        last  = fake.last_name()
-
+        first    = fake.first_name().replace("'", "''")
+        last     = fake.last_name().replace("'", "''")
         passport = f"P{random.randint(10000000, 99999999)}"
+
         if passport in used_passports:
             guest_id += 1
             continue
         used_passports.add(passport)
 
-        email = f"{first.lower().replace(' ','')}.{last.lower().replace(' ','')}_{guest_id}@{random.choice(['gmail.com','yahoo.com','outlook.com','walla.co.il'])}"
+        email = f"{fake.user_name()}_{guest_id}@{random.choice(['gmail.com','yahoo.com','outlook.com','walla.co.il'])}"
         if email in used_emails:
             guest_id += 1
             continue
         used_emails.add(email)
 
-        phone = f"05{random.randint(0,9)}-{random.randint(1000000,9999999)}"
+        phone    = f"05{random.randint(0,9)}-{random.randint(1000000,9999999)}"
         reg_date = random_date(date(2020, 1, 1), date(2024, 12, 31))
-
-        first = first.replace("'", "''")
-        last  = last.replace("'", "''")
 
         rows.append(
             f"({guest_id}, '{first}', '{last}', '{passport}', '{phone}', '{email}', '{reg_date}')"
         )
         all_guest_ids.append(guest_id)
         guest_id += 1
-        count += 1
+        count    += 1
 
-        # כותבים ב-chunks של 500 למניעת שאילתות ענק
         if len(rows) == 500:
-            f.write("INSERT INTO GUESTS (guest_id, first_name, last_name, passport_number, phone, email, registration_date) VALUES\n")
-            f.write(",\n".join(rows) + ";\n\n")
+            flush_rows(f, GUEST_SQL, rows)
             rows = []
 
-    if rows:
-        f.write("INSERT INTO GUESTS (guest_id, first_name, last_name, passport_number, phone, email, registration_date) VALUES\n")
-        f.write(",\n".join(rows) + ";\n\n")
+    flush_rows(f, GUEST_SQL, rows)
 
     # ----------------------------------------------------------
-    # BOOKINGS – 19,975 רשומות
+    # BOOKINGS – 19,975 רשומות (בחבילות של 500)
     # ----------------------------------------------------------
     write_section(f, "BOOKINGS")
 
-    booking_id = 2000
+    BOOKING_SQL     = "INSERT INTO BOOKINGS (booking_id, booking_date, check_in_date, check_out_date, num_guests, total_price, guest_id, source_id) VALUES"
+    booking_id      = 2000
     all_booking_ids = list(EXISTING_BOOKING_IDS)
+    rows            = []
+    count           = 0
 
-    rows = []
-    count = 0
     while count < NUM_BOOKINGS:
         while booking_id in EXISTING_BOOKING_IDS:
             booking_id += 1
@@ -162,46 +163,42 @@ with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         nights     = random.randint(1, 14)
         check_out  = check_in + timedelta(days=nights)
         book_date  = check_in - timedelta(days=random.randint(1, 90))
-        num_guests = random.randint(1, 4)
-        price_per_night = random.choice([350, 480, 500, 750, 900, 1200, 2000])
-        total      = round(price_per_night * nights, 2)
+        n_guests   = random.randint(1, 4)
+        price      = random.choice([350, 480, 500, 750, 900, 1200, 2000])
+        total      = round(price * nights, 2)
 
         rows.append(
-            f"({booking_id}, '{book_date}', '{check_in}', '{check_out}', {num_guests}, {total}, {g_id}, {s_id})"
+            f"({booking_id}, '{book_date}', '{check_in}', '{check_out}', {n_guests}, {total}, {g_id}, {s_id})"
         )
         all_booking_ids.append(booking_id)
         booking_id += 1
-        count += 1
+        count      += 1
 
         if len(rows) == 500:
-            f.write("INSERT INTO BOOKINGS (booking_id, booking_date, check_in_date, check_out_date, num_guests, total_price, guest_id, source_id) VALUES\n")
-            f.write(",\n".join(rows) + ";\n\n")
+            flush_rows(f, BOOKING_SQL, rows)
             rows = []
 
-    if rows:
-        f.write("INSERT INTO BOOKINGS (booking_id, booking_date, check_in_date, check_out_date, num_guests, total_price, guest_id, source_id) VALUES\n")
-        f.write(",\n".join(rows) + ";\n\n")
+    flush_rows(f, BOOKING_SQL, rows)
 
     # ----------------------------------------------------------
     # ROOM_ASSIGNMENTS – 475 רשומות
     # ----------------------------------------------------------
     write_section(f, "ROOM_ASSIGNMENTS")
 
-    assign_id = 500
-    rows = []
-
+    assign_id  = 500
     used_pairs = set()
-    count = 0
-    attempts = 0
+    rows       = []
+    count      = 0
+    attempts   = 0
 
-    while count < NUM_ASSIGNMENTS and attempts < NUM_ASSIGNMENTS * 10:
+    while count < NUM_ASSIGNMENTS and attempts < NUM_ASSIGNMENTS * 20:
         attempts += 1
         while assign_id in EXISTING_ASSIGN_IDS:
             assign_id += 1
 
-        b_id   = random.choice(all_booking_ids)
-        r_id   = random.choice(all_room_ids)
-        pair   = (b_id, r_id)
+        b_id = random.choice(all_booking_ids)
+        r_id = random.choice(all_room_ids)
+        pair = (b_id, r_id)
 
         if pair in used_pairs:
             continue
@@ -210,10 +207,11 @@ with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         assigned_at = random_date(date(2022, 1, 1), date(2025, 6, 30))
         rows.append(f"({assign_id}, '{assigned_at}', {b_id}, {r_id})")
         assign_id += 1
-        count += 1
+        count     += 1
 
-    f.write("INSERT INTO ROOM_ASSIGNMENTS (assignment_id, assigned_at, booking_id, room_id) VALUES\n")
-    f.write(",\n".join(rows) + ";\n\n")
+    flush_rows(f,
+        "INSERT INTO ROOM_ASSIGNMENTS (assignment_id, assigned_at, booking_id, room_id) VALUES",
+        rows)
 
     # ----------------------------------------------------------
     # CHECK_INS_OUTS – 485 רשומות
@@ -221,46 +219,26 @@ with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
     write_section(f, "CHECK_INS_OUTS")
 
     checkin_id = 500
-    used_bookings_checkin = set(range(1001, 1016))
-    rows = []
-    count = 0
+    available  = [b for b in all_booking_ids if b not in EXISTING_CHECKIN_BOOKINGS]
+    sample     = random.sample(available, min(NUM_CHECKINS, len(available)))
+    rows       = []
 
-    sample_bookings = random.sample(
-        [b for b in all_booking_ids if b not in used_bookings_checkin],
-        min(NUM_CHECKINS, len(all_booking_ids))
-    )
-
-    for b_id in sample_bookings:
+    for b_id in sample:
         while checkin_id in EXISTING_CHECKIN_IDS:
             checkin_id += 1
-
         check_in  = random_date(date(2022, 1, 1), date(2025, 6, 30))
-        nights    = random.randint(1, 14)
-        check_out = check_in + timedelta(days=nights)
-
+        check_out = check_in + timedelta(days=random.randint(1, 14))
         rows.append(f"({checkin_id}, '{check_in}', '{check_out}', {b_id})")
         checkin_id += 1
-        count += 1
-        if count >= NUM_CHECKINS:
-            break
 
-    f.write("INSERT INTO CHECK_INS_OUTS (log_id, actual_check_in, actual_check_out, booking_id) VALUES\n")
-    f.write(",\n".join(rows) + ";\n\n")
-
-print(f"✓ הקובץ '{OUTPUT_FILE}' נוצר בהצלחה!")
-print(f"  ROOMS:           {NUM_ROOMS:,} רשומות")
-print(f"  GUESTS:          {NUM_GUESTS:,} רשומות")
-print(f"  BOOKINGS:        {NUM_BOOKINGS:,} רשומות")
-print(f"  ROOM_ASSIGNMENTS:{NUM_ASSIGNMENTS:,} רשומות")
-print(f"  CHECK_INS_OUTS:  {NUM_CHECKINS:,} רשומות")
+    flush_rows(f,
+        "INSERT INTO CHECK_INS_OUTS (log_id, actual_check_in, actual_check_out, booking_id) VALUES",
+        rows)
 
 
-
-
-## התקנת התלות
-#pip install faker
-
-# הרצת הסקריפט
-#python generate_data.py
-
-# הפלט: קובץ insertTables_python.sql
+print(f"\n✓ הקובץ '{OUTPUT_FILE}' נוצר בהצלחה!\n")
+print(f"  ROOMS:            {NUM_ROOMS:>6,} רשומות")
+print(f"  GUESTS:           {NUM_GUESTS:>6,} רשומות")
+print(f"  BOOKINGS:         {NUM_BOOKINGS:>6,} רשומות")
+print(f"  ROOM_ASSIGNMENTS: {NUM_ASSIGNMENTS:>6,} רשומות")
+print(f"  CHECK_INS_OUTS:   {NUM_CHECKINS:>6,} רשומות")
