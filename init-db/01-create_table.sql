@@ -1,192 +1,151 @@
--- =========================================
---           RESERVATIONS MODULE
--- =========================================
+CREATE TABLE ROOM_TYPES
+(
+  type_id       INT            NOT NULL,
+  type_name     VARCHAR(50)    NOT NULL,
+  base_price    NUMERIC(10,2)  NOT NULL,
+  max_occupancy INT            NOT NULL,
+  description   VARCHAR(300),
 
--- Table: Guest
--- Stores all guest personal information
-CREATE TABLE Guest (
-    GuestID SERIAL PRIMARY KEY,           -- Unique ID for each guest
-    FirstName VARCHAR(50),                -- Guest first name
-    LastName VARCHAR(50),                 -- Guest last name
-    Email VARCHAR(100) UNIQUE,            -- Unique email per guest
-    Phone VARCHAR(20),                    -- Phone number
-    PassportNumber VARCHAR(50)            -- Identification / passport
+  PRIMARY KEY (type_id),
+
+  CONSTRAINT uq_room_type_name
+    UNIQUE (type_name),
+
+  CONSTRAINT chk_base_price
+    CHECK (base_price > 0),
+
+  CONSTRAINT chk_max_occupancy
+    CHECK (max_occupancy BETWEEN 1 AND 10)
 );
 
-COMMENT ON TABLE Guest IS 'Stores guest personal details';
-COMMENT ON COLUMN Guest.GuestID IS 'Primary key of guest';
+CREATE TABLE ROOMS
+(
+  room_id         INT          NOT NULL,
+  floor           INT          NOT NULL,
+  physical_status VARCHAR(20)  NOT NULL DEFAULT 'AVAILABLE',
+  phone_extension VARCHAR(10),
+  type_id         INT          NOT NULL,
 
+  PRIMARY KEY (room_id),
 
--- Table: ReservationStatus
--- Defines possible reservation states (Booked, Cancelled, Completed, etc.)
-CREATE TABLE ReservationStatus (
-    StatusID SERIAL PRIMARY KEY,
-    StatusName VARCHAR(50) UNIQUE         -- Name of status
+  FOREIGN KEY (type_id)
+    REFERENCES ROOM_TYPES(type_id),
+
+  CONSTRAINT chk_room_status
+    CHECK (physical_status IN ('AVAILABLE', 'OCCUPIED', 'MAINTENANCE', 'OUT_OF_ORDER')),
+
+  CONSTRAINT chk_floor
+    CHECK (floor BETWEEN 1 AND 50),
+
+  CONSTRAINT uq_phone_extension
+    UNIQUE (phone_extension)
 );
 
--- Table: ReservationSource
--- Defines where reservation came from (Website, Booking, Walk-in)
-CREATE TABLE ReservationSource (
-    SourceID SERIAL PRIMARY KEY,
-    SourceName VARCHAR(50)
+CREATE TABLE BOOKING_SOURCES
+(
+  source_id       INT           NOT NULL,
+  source_name     VARCHAR(100)  NOT NULL,
+  commission_rate NUMERIC(5,2)  NOT NULL,
+  contact_info    VARCHAR(200),
+
+  PRIMARY KEY (source_id),
+
+  CONSTRAINT uq_source_name
+    UNIQUE (source_name),
+
+  CONSTRAINT chk_commission
+    CHECK (commission_rate BETWEEN 0 AND 100)
 );
 
+CREATE TABLE GUESTS
+(
+  guest_id          INT           NOT NULL,
+  first_name        VARCHAR(50)   NOT NULL,
+  last_name         VARCHAR(50)   NOT NULL,
+  passport_number   VARCHAR(20)   NOT NULL,
+  phone             VARCHAR(20)   NOT NULL,
+  email             VARCHAR(100)  NOT NULL,
+  registration_date DATE          NOT NULL,
 
--- Table: Reservation
--- Core reservation entity
-CREATE TABLE Reservation (
-    ReservationID SERIAL PRIMARY KEY,
-    GuestID INT,                          -- FK to Guest
-    StatusID INT,                         -- FK to ReservationStatus
-    SourceID INT,                         -- FK to ReservationSource
-    ReservationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CheckInDate DATE,
-    CheckOutDate DATE,
+  PRIMARY KEY (guest_id),
 
-    FOREIGN KEY (GuestID) REFERENCES Guest(GuestID),
-    FOREIGN KEY (StatusID) REFERENCES ReservationStatus(StatusID),
-    FOREIGN KEY (SourceID) REFERENCES ReservationSource(SourceID)
+  CONSTRAINT uq_guest_passport
+    UNIQUE (passport_number),
+
+  CONSTRAINT uq_guest_email
+    UNIQUE (email),
+
+  CONSTRAINT chk_email
+    CHECK (email LIKE '%@%')
 );
 
-COMMENT ON TABLE Reservation IS 'Main reservation table';
+CREATE TABLE BOOKINGS
+(
+  booking_id     INT            NOT NULL,
+  check_in_date  DATE           NOT NULL,
+  check_out_date DATE           NOT NULL,
+  total_price    NUMERIC(10,2)  NOT NULL,
+  num_guests     INT            NOT NULL,
+  booking_date   DATE           NOT NULL,
+  guest_id       INT            NOT NULL,
+  source_id      INT            NOT NULL,
 
+  PRIMARY KEY (booking_id),
 
--- Table: Room
--- Basic room information (minimal for linking)
-CREATE TABLE Room (
-    RoomID SERIAL PRIMARY KEY,
-    RoomNumber INT UNIQUE,
-    Floor INT
+  FOREIGN KEY (guest_id)
+    REFERENCES GUESTS(guest_id),
+
+  FOREIGN KEY (source_id)
+    REFERENCES BOOKING_SOURCES(source_id),
+
+  CONSTRAINT chk_booking_dates
+    CHECK (check_out_date > check_in_date),
+
+  CONSTRAINT chk_booking_date_before_checkin
+    CHECK (booking_date <= check_in_date),
+
+  CONSTRAINT chk_num_guests
+    CHECK (num_guests >= 1),
+
+  CONSTRAINT chk_total_price
+    CHECK (total_price >= 0)
 );
 
+CREATE TABLE ROOM_ASSIGNMENTS
+(
+  assignment_id INT  NOT NULL,
+  assigned_at   DATE NOT NULL,
+  booking_id    INT  NOT NULL,
+  room_id       INT  NOT NULL,
 
--- Table: ReservationRoom
--- Resolves many-to-many relationship between Reservation and Room
-CREATE TABLE ReservationRoom (
-    ReservationRoomID SERIAL PRIMARY KEY,
-    ReservationID INT,
-    RoomID INT,
+  PRIMARY KEY (assignment_id),
 
-    FOREIGN KEY (ReservationID) REFERENCES Reservation(ReservationID),
-    FOREIGN KEY (RoomID) REFERENCES Room(RoomID)
+  FOREIGN KEY (booking_id)
+    REFERENCES BOOKINGS(booking_id),
+
+  FOREIGN KEY (room_id)
+    REFERENCES ROOMS(room_id),
+
+  CONSTRAINT uq_booking_room
+    UNIQUE (booking_id, room_id)
 );
 
-COMMENT ON TABLE ReservationRoom IS 'Links reservations to rooms';
+CREATE TABLE CHECK_INS_OUTS
+(
+  log_id           INT  NOT NULL,
+  actual_check_in  DATE,
+  actual_check_out DATE,
+  booking_id       INT  NOT NULL,
 
+  PRIMARY KEY (log_id, booking_id),
 
--- Table: ReservationHistory
--- Tracks status changes over time
-CREATE TABLE ReservationHistory (
-    HistoryID SERIAL PRIMARY KEY,
-    ReservationID INT,
-    StatusID INT,
-    ChangeDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (booking_id)
+    REFERENCES BOOKINGS(booking_id),
 
-    FOREIGN KEY (ReservationID) REFERENCES Reservation(ReservationID),
-    FOREIGN KEY (StatusID) REFERENCES ReservationStatus(StatusID)
+  CONSTRAINT chk_actual_check_dates
+    CHECK (
+      actual_check_out IS NULL
+      OR actual_check_in IS NULL
+      OR actual_check_out >= actual_check_in
+    )
 );
-
-COMMENT ON TABLE ReservationHistory IS 'Tracks reservation status changes';
-
-
--- =========================================
---           FRONT DESK MODULE
--- =========================================
-
--- Table: Employee
--- Stores hotel staff information
-CREATE TABLE Employee (
-    EmployeeID SERIAL PRIMARY KEY,
-    FirstName VARCHAR(50),
-    LastName VARCHAR(50),
-    Role VARCHAR(50)                     -- Receptionist, Manager, etc.
-);
-
-COMMENT ON TABLE Employee IS 'Stores employee data';
-
-
--- Table: CheckIn
--- Represents actual guest arrival
-CREATE TABLE CheckIn (
-    CheckInID SERIAL PRIMARY KEY,
-    ReservationID INT UNIQUE,            -- One reservation → one check-in
-    EmployeeID INT,                      -- Employee who handled check-in
-    CheckInDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (ReservationID) REFERENCES Reservation(ReservationID),
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
-);
-
-COMMENT ON TABLE CheckIn IS 'Stores check-in records';
-
-
--- Table: CheckOut
--- Represents guest departure
-CREATE TABLE CheckOut (
-    CheckOutID SERIAL PRIMARY KEY,
-    CheckInID INT UNIQUE,                -- One check-in → one checkout
-    CheckOutDate TIMESTAMP,
-    PaymentStatus VARCHAR(50),           -- Paid / Pending
-
-    FOREIGN KEY (CheckInID) REFERENCES CheckIn(CheckInID)
-);
-
-COMMENT ON TABLE CheckOut IS 'Stores check-out records';
-
-
--- Table: RoomAssignment
--- Actual room given during check-in (can differ from reservation)
-CREATE TABLE RoomAssignment (
-    AssignmentID SERIAL PRIMARY KEY,
-    CheckInID INT,
-    RoomID INT,
-    AssignedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (CheckInID) REFERENCES CheckIn(CheckInID),
-    FOREIGN KEY (RoomID) REFERENCES Room(RoomID)
-);
-
-COMMENT ON TABLE RoomAssignment IS 'Tracks assigned rooms during stay';
-
-
--- Table: EarlyCheckIn
--- Handles early check-in approvals and fees
-CREATE TABLE EarlyCheckIn (
-    EarlyCheckInID SERIAL PRIMARY KEY,
-    CheckInID INT,
-    Approved BOOLEAN DEFAULT FALSE,
-    ExtraFee DECIMAL(10,2),
-
-    FOREIGN KEY (CheckInID) REFERENCES CheckIn(CheckInID)
-);
-
-COMMENT ON TABLE EarlyCheckIn IS 'Stores early check-in requests';
-
-
--- Table: LateCheckOut
--- Handles late check-out approvals and fees
-CREATE TABLE LateCheckOut (
-    LateCheckOutID SERIAL PRIMARY KEY,
-    CheckOutID INT,
-    Approved BOOLEAN DEFAULT FALSE,
-    ExtraFee DECIMAL(10,2),
-
-    FOREIGN KEY (CheckOutID) REFERENCES CheckOut(CheckOutID)
-);
-
-COMMENT ON TABLE LateCheckOut IS 'Stores late check-out requests';
-
-
--- Table: FrontDeskLog
--- Logs actions performed by employees
-CREATE TABLE FrontDeskLog (
-    LogID SERIAL PRIMARY KEY,
-    EmployeeID INT,
-    ActionDescription TEXT,              -- Description of action
-    ActionTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
-);
-
-COMMENT ON TABLE FrontDeskLog IS 'Tracks front desk activities';
-
