@@ -163,6 +163,30 @@ The system uses foreign keys, weak entities, and entity relationships to maintai
 כל רשומה בטבלה מייצגת אורח אחד.
 
 הטבלה משמשת לזיהוי האורח בעת ביצוע הזמנה, בשלב הצ׳ק־אין, ולשמירת פרטי קשר לצורך תקשורת עם האורח.
+```sql
+CREATE TABLE GUESTS
+(
+  guest_id          INT           NOT NULL,
+  first_name        VARCHAR(50)   NOT NULL,
+  last_name         VARCHAR(50)   NOT NULL,
+  passport_number   VARCHAR(20)   NOT NULL,
+  phone             VARCHAR(20)   NOT NULL,
+  email             VARCHAR(100)  NOT NULL,
+  registration_date DATE          NOT NULL,
+
+  PRIMARY KEY (guest_id),
+
+  CONSTRAINT uq_guest_passport
+    UNIQUE (passport_number),
+
+  CONSTRAINT uq_guest_email
+    UNIQUE (email),
+
+  CONSTRAINT chk_email
+    CHECK (email LIKE '%@%')
+);
+```
+
 
 ### שדות הטבלה
 
