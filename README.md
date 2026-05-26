@@ -268,9 +268,12 @@ CREATE TABLE GUESTS
 | `phone` | `VARCHAR(20)` | כן | מספר טלפון ליצירת קשר | — |
 | `email` | `VARCHAR(100)` | כן | כתובת דואר אלקטרוני | ייחודי, חייב להכיל `@` |
 | `registration_date` | `DATE` | כן | תאריך ההרשמה הראשונה של האורח למערכת | — |
-</div>
-###קשרים
 
+</div>
+
+
+
+### קשרים
 - אורח אחד יכול לבצע הזמנות רבות.
 - הקשר בין `GUESTS` לבין `BOOKINGS` הוא קשר של **אחד לרבים**:  
   `GUESTS 1:N BOOKINGS`
@@ -388,6 +391,7 @@ CREATE TABLE ROOM_ASSIGNMENTS
 | `booking_id` | `INT` | כן | ההזמנה שאליה החדר משויך | מפתח זר אל `BOOKINGS(booking_id)` |
 | `room_id` | `INT` | כן | החדר ששויך להזמנה | מפתח זר אל `ROOMS(room_id)` |
 </div>
+
 ### קשרים
 
 - הטבלה מחברת בין `BOOKINGS` לבין `ROOMS`.
