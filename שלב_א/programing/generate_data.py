@@ -4,7 +4,7 @@
 # פלט:    insertTables_python.sql
 
 import random
-from datetime import date, timedelta
+from datetime import date, timedelta #
 from faker import Faker
 
 fake = Faker(['he_IL', 'en_US', 'de_DE', 'fr_FR'])
