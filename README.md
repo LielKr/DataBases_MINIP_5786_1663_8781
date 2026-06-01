@@ -479,7 +479,23 @@ CREATE TABLE CHECK_INS_OUTS
 
 
 
+# צילומי מסך של שיטות הכנסת הנתונים שנבחרו:
+## 1. insert file 
+![screen 1](images/insert_method_1-(1).png)
+![screen 1](images/insert_method_1-(2).png)
 
 
+## 2. python programming script
+# צילום מסך של קוד פייתון להוספה ל check in check out
+![screen 1](images/insert_method_2-(1).png)
+![screen 1](images/insert_method_2-(2).png)
+
+## 3. mockaroo file
+![screen 1](images/insert_method_3.png)
+ 
+# צילומי מסך של גיבוי נתונים ושחזור הנתונים .
 
 
+![screen 1](images/backup1.png)
+![screen 1](images/backup2.png)
+![screen 1](images/restart.png)
