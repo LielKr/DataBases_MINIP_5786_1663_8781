@@ -38,6 +38,7 @@ GROUP BY
     EXTRACT(YEAR FROM b.check_in_date),
     EXTRACT(MONTH FROM b.check_in_date)
 ORDER BY booking_year, booking_month;
+```
 
 צילום הרצה ותוצאה צורה א':
 [כאן יש לצרף צילום מסך של הרצת שאילתה 2A ותוצאתה עד 5 שורות]
