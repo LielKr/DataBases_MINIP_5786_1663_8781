@@ -41,6 +41,6 @@ ORDER BY booking_year, booking_month;
 ```
 
 צילום הרצה ותוצאה צורה א':
-[כאן יש לצרף צילום מסך של הרצת שאילתה 2A ותוצאתה עד 5 שורות]
-
+![Query1](images/s1/run1.png)
+![Query1](images/s1/5_1.png)
 צורה ב': שימוש בתת-שאילתה (Subquery) המפרקת את התאריך תחילה (2B)
