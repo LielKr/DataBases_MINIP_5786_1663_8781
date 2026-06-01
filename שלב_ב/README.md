@@ -40,7 +40,35 @@ GROUP BY
 ORDER BY booking_year, booking_month;
 ```
 
-צילום הרצה ותוצאה צורה א':
-![Query1](images/s1/run1.png)
-![Query1](images/s1/5_1.png)
-צורה ב': שימוש בתת-שאילתה (Subquery) המפרקת את התאריך תחילה (2B)
+##### צילום הרצה ותוצאה צורה א':
+![Query1](שלב_ב/images/run1.png)
+![Query1](שלב_ב/images/first_5_query1.png)
+
+#### צורה ב': שימוש בתת-שאילתה (Subquery) המפרקת את התאריך תחילה (2B)
+```sql
+SELECT
+    monthly.booking_year,
+    monthly.booking_month,
+    COUNT(*) AS number_of_bookings,
+    SUM(monthly.total_price) AS total_revenue,
+    AVG(monthly.total_price) AS average_booking_price
+FROM
+(
+    SELECT
+        booking_id,
+        total_price,
+        EXTRACT(YEAR FROM check_in_date) AS booking_year,
+        EXTRACT(MONTH FROM check_in_date) AS booking_month
+    FROM BOOKINGS
+    WHERE booking_status IN ('CONFIRMED', 'COMPLETED')
+) monthly
+GROUP BY monthly.booking_year, monthly.booking_month
+ORDER BY monthly.booking_year, monthly.booking_month;
+```
+
+
+##### צילום הרצה ותוצאה צורה ב':
+#### הסבר הבדלים ויעילות:
+מערכת PostgreSQL מייעלת את שתי השאילתות בצורה דומה מאוד בעזרת ה-Query Optimizer שלה. עם זאת, צורה א' (2A) עדיפה ויעילה יותר. היא ניגשת ישירות לטבלה ומבצעת את הקיבוץ והסינון בשלב אחד מבלי ליצור מבנה נתונים זמני בזיכרון (Inline View). צורה ב' יוצרת תת-שאילתה שלא לצורך ומקשה על קריאות הקוד.
+
+
