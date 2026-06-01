@@ -41,9 +41,8 @@ ORDER BY booking_year, booking_month;
 ```
 
 ##### צילום הרצה ותוצאה צורה א':
-![Query1](images/s2/run1.png)
-![Query1](images/s2/5_1.png)
-
+![Query1](שלב_ב/images/run1.png)
+![Query1](שלב_ב/images/first_5_query1.png)
 
 #### צורה ב': שימוש בתת-שאילתה (Subquery) המפרקת את התאריך תחילה (2B)
 ```sql
