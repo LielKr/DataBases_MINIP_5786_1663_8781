@@ -41,9 +41,7 @@ ORDER BY booking_year, booking_month;
 ```
 
 ##### צילום הרצה ותוצאה צורה א':
-![Query1](שלב_ב/images/run1.png)
-שלב_ב/images/first_5_query1B.png
-![Query1](שלב_ב/images/first_5_query1B.png)
+![A1](images/A1.jpg)
 
 #### צורה ב': שימוש בתת-שאילתה (Subquery) המפרקת את התאריך תחילה (2B)
 ```sql
@@ -69,6 +67,9 @@ ORDER BY monthly.booking_year, monthly.booking_month;
 
 
 ##### צילום הרצה ותוצאה צורה ב':
+![A2](images/A2.jpg)
+
+
 #### הסבר הבדלים ויעילות:
 מערכת PostgreSQL מייעלת את שתי השאילתות בצורה דומה מאוד בעזרת ה-Query Optimizer שלה. עם זאת, צורה א' (2A) עדיפה ויעילה יותר. היא ניגשת ישירות לטבלה ומבצעת את הקיבוץ והסינון בשלב אחד מבלי ליצור מבנה נתונים זמני בזיכרון (Inline View). צורה ב' יוצרת תת-שאילתה שלא לצורך ומקשה על קריאות הקוד.
 
@@ -92,6 +93,7 @@ GROUP BY rt.type_name, rt.base_price, rt.max_occupancy
 ORDER BY available_rooms DESC, rt.type_name;
 ```
 ##### צילום הרצה ותוצאה צורה א':
+![B1](images/B1.jpg)
 
 ![שאילתה 3A]([נתיב לתמונה שלך])
 #### צורה ב': שימוש בתת-שאילתה קורלטיבית (Correlated Subquery) ב-SELECT (3B)
@@ -112,8 +114,8 @@ ORDER BY available_rooms DESC, rt.type_name;
 ```
 
 ##### צילום הרצה ותוצאה צורה ב':
+![B2](images/B2.jpg)
 
-![שאילתה 3B]([נתיב לתמונה שלך])
 
 #### הסבר הבדלים ויעילות:
  צורה א' (3A) יעילה משמעותית. היא מבצעת צירוף (Hash Join או Merge Join) פעם אחת על כל הנתונים ומקבצת אותם. צורה ב' (3B) משתמשת בתת-שאילתה קורלטיבית, מה שאומר שעבור כל שורה בטבלת ROOM_TYPES, בסיס הנתונים נאלץ להריץ מחדש שאילתת ספירה על טבלת ROOMS. במערכת עם הרבה קטגוריות נתונים, צורה ב' תגרום לפגיעה קשה בביצועים.
@@ -141,7 +143,7 @@ GROUP BY g.guest_id, g.first_name, g.last_name, g.phone, g.email
 ORDER BY total_spent DESC, total_bookings DESC;
 ```
 ##### צילום הרצה ותוצאה צורה א':
-![שאילתה 4A]([נתיב לתמונה שלך])
+![C1](images/C1.jpg)
 
 #### צורה ב': שימוש בשתי תת-שאילתות נפרדות בתוך ה-SELECT (4B)
 ```sql
@@ -164,7 +166,7 @@ FROM GUESTS g
 ORDER BY total_spent DESC, total_bookings DESC;
 ```
 ##### צילום הרצה ותוצאה צורה ב':
-![שאילתה 4B]([נתיב לתמונה שלך])
+![C2](images/C2.jpg)
 
 ##### הסבר הבדלים ויעילות:
 צורה א' (4A) היא המנצחת הברורה מבחינת יעילות. היא סורקת את טבלת האורחים ואת טבלת ההזמנות פעם אחת בלבד ומחברת ביניהן. צורה ב' (4B) מייצרת שתי תת-שאילתות נפרדות לכל שורת אורח, מה שגורם לכמות עצומה של קריאות דיסק וסריקות חוזרות של טבלת BOOKINGS.
@@ -192,7 +194,7 @@ ORDER BY b.check_in_date;
 ```
 ##### צילום הרצה ותוצאה צורה א':
 
-![שאילתה 5A]([נתיב לתמונה שלך])
+![D1](images/D1.jpg)
 
 #### צורה ב': שימוש באופרטור NOT EXISTS (5B)
 
@@ -218,7 +220,7 @@ ORDER BY b.check_in_date;
 
 ##### צילום הרצה ותוצאה צורה ב':
 
-![שאילתה 5B]([נתיב לתמונה שלך])
+![D2](images/D2.jpg)
 
 #### הסבר הבדלים ויעילות:
 
@@ -248,7 +250,7 @@ ORDER BY b.check_in_date ASC, b.booking_id ASC;
 ```
 
 ##### צילום הרצה ותוצאה:
-![שאילתה 1]([נתיב לתמונה שלך])
+![S1](images/S1.jpg)
 
 ### 💰 שאילתה 6: ביצועי מקורות הזמנה וחישובי עמלות
 **תיאור בעברית:** שאילתה פיננסית המנתחת את היקף ההזמנות מכל ערוץ שיווקי. השאילתה מציגה את שם הערוץ, כמות הזמנות, הכנסה גולמית, סך העמלה המשוערת שהמלון משלם לערוץ, וההכנסה נטו שנשארה למלון.
@@ -271,7 +273,7 @@ GROUP BY bs.source_id, bs.source_name, bs.commission_rate
 ORDER BY net_revenue DESC;
 ```
 ##### צילום הרצה ותוצאה:
-![שאילתה 6]([נתיב לתמונה שלך])
+![S2](images/S2.jpg)
 
 ### 🛎️ שאילתה 7: השוואת זמני כניסה/יציאה מתוכננים מול המציאות בפועל
 **תיאור בעברית:** שאילתת בקרה המפרקת את תאריך הכניסה בפועל לימים, חודשים ושנים. היא משתמשת בבלוק CASE WHEN כדי לסווג את הגעת האורח (הגיע בזמן, הגיע באיחור, או הקדים) בהשוואה לתאריך המקורי שהזמין.
@@ -302,7 +304,7 @@ ORDER BY b.check_in_date DESC, b.booking_id;
 ```
 ##### צילום הרצה ותוצאה:
 
-![שאילתה 7]([נתיב לתמונה שלך])
+![S3](images/S3.jpg)
 
 ### 🔍 שאילתה 8: חיפוש חדרים תפוסים בטווח תאריכים מוגדר
 **תיאור בעברית:** מאפשרת לפקידי הקבלה לראות אילו חדרים משובצים ותפוסים עבור טווח תאריכים ספציפי (לדוגמה בין ה-01 ל-10 באוגוסט 2026), כדי למנוע כפל הזמנות (Overbooking).
@@ -331,8 +333,7 @@ ORDER BY r.room_id, b.check_in_date;
 ```
 ##### צילום הרצה ותוצאה:
 
-![שאילתה 8]([נתיב לתמונה שלך])
-
+![S4](images/S4.jpg)
 ## 3. שאילתות UPDATE (עדכון נתונים)
     
 ###  ⬆️ עדכון 1: שינוי סטטוס חדר ל-'OCCUPIED' בעת צ'ק-אין בפועל
@@ -357,7 +358,9 @@ WHERE r.room_id IN
 ```
 
 ##### צילום מסך – הרצה, ומצב בסיס הנתונים לפני ואחרי:
-![עדכון 1]([נתיב לתמונה שלך])
+![update1](images/update1.png)
+![update2](images/update2.png)
+
     
 ###  ⬆️ עדכון 2: סגירת סטטוס הזמנה ל-'COMPLETED' לאחר עזיבה 
 
@@ -379,7 +382,8 @@ WHERE EXISTS
 );
 ```
 ##### צילום מסך – הרצה, ומצב בסיס הנתונים לפני ואחרי:
-![עדכון 2]([נתיב לתמונה שלך])
+![update3](images/update3.png)
+![update4](images/update4.png)
 ###  ⬆️ עדכון 3: עדכון מחירים יזום להזמנות עתידיות מערוצים יקרים
 
 **מלל בעברית:** מעלה ב-10% את המחיר הכולל של הזמנות עתידיות מאושרות שמגיעות ממקורות הזמנה חיצוניים שגובים מהמלון עמלה גבוהה (מעל 15%), כדי לאזן את רווחי המלון.
@@ -400,8 +404,8 @@ WHERE b.booking_status = 'CONFIRMED'
   );
 ```
 ##### צילום מסך – הרצה, ומצב בסיס הנתונים לפני ואחרי:
-![עדכון 3]([נתיב לתמונה שלך])
-
+![update5](images/update5.png)
+![update6](images/update6.png)
 ## 4. שאילתות DELETE (מחיקת נתונים)
 ### ✖️ מחיקה 1: הסרת שיוכי חדרים עבור הזמנות עתידיות שבוטלו
 **מלל בעברית:** מוחק מטבלת ROOM_ASSIGNMENTS את כל שיבוצי החדרים של הזמנות עתידיות שקיבלו סטטוס 'CANCELLED', כדי לשחרר את החדרים חזרה למלאי המלון.
@@ -421,8 +425,8 @@ WHERE ra.booking_id IN
 ```
 
 ##### צילום מסך – הרצה, ומצב לפני ואחרי:
-![מחיקה 1]([נתיב לתמונה שלך])
-
+![DE1](images/DE1.jpg)
+![DE2](images/DE2.jpg)
 ### ✖️ מחיקה 2: ניקוי רשומות לוג ריקות של הזמנות שלא מומשו
 **מלל בעברית:** מוחק מטבלת לוגי הכניסה/יציאה שורות ריקות של הזמנות שבוטלו או סווגו כאי-הגעה ('NO_SHOW'), מאחר ואין להן ערך היסטורי של הגעה בפועל.
 
@@ -441,8 +445,8 @@ AND cio.actual_check_in IS NULL
 AND cio.actual_check_out IS NULL;
 ```
 ##### צילום מסך – הרצה, ומצב לפני ואחרי:
-![מחיקה 2]([נתיב לתמונה שלך])
-
+![DE3](images/DE3.jpg)
+![DE4](images/DE4.jpg)
 ### ✖️ מחיקה 3: הסרת מקורות הזמנה שלא נעשה בהם שימוש מעולם
 **מלל בעברית:** מוחק מטבלת BOOKING_SOURCES סוכנויות או ערוצי הפצה שהוגדרו במערכת אך אף אורח לא ביצע דרכם הזמנה בפועל.
 ##### קוד השאילתה:
@@ -459,8 +463,8 @@ WHERE NOT EXISTS
 );
 ```
 ##### צילום מסך – הרצה, ומצב לפני ואחרי:
-![מחיקה 3]([נתיב לתמונה שלך])
-
+![DE5](images/DE5.jpg)
+![DE6](images/DE6.jpg)
 ## 5. ניהול טרנזקציות – Rollback & Commit
 חלק זה מדגים את השמירה על עקרון ה-Atomicity בבסיס הנתונים באמצעות שימוש בטרנזקציות מבוקרות.
 
@@ -469,17 +473,17 @@ WHERE NOT EXISTS
 
 ```sql
 -- בדיקת המצב המקורי
-SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1;
+SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1010;
 
 BEGIN;
 -- ביצוע השינוי הזמני
-UPDATE BOOKINGS SET booking_status = 'CANCELLED', total_price = 0 WHERE booking_id = 1;
+UPDATE BOOKINGS SET booking_status = 'CANCELLED', total_price = 0 WHERE booking_id = 1010;
 -- בדיקת המצב בתוך הטרנזקציה (השתנה)
-SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1;
+SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1010;
 
 ROLLBACK;
 -- בדיקה לאחר ביטול - חזר לקדמותו
-SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1;
+SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1010;
 ```
 
 ##### צילומי מסך של שלבי ה-ROLLBACK:
@@ -494,17 +498,17 @@ SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 
 ```sql
 
 -- בדיקת המצב המקורי
-SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2;
+SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2000;
 
 BEGIN;
 -- ביצוע השינוי
-UPDATE BOOKINGS SET booking_status = 'COMPLETED' WHERE booking_id = 2;
+UPDATE BOOKINGS SET booking_status = 'COMPLETED' WHERE booking_id = 2000;
 -- בדיקה בתוך הטרנזקציה
-SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2;
+SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2000;
 
 COMMIT;
 -- בדיקה לאחר שמירה - השינוי נשאר קבוע
-SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2;
+SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2000;
 ```
 ##### צילומי מסך של שלבי ה-COMMIT:
 ![שלבי קומיט](images/RollbackCommit/commit_steps1.png)
@@ -526,7 +530,7 @@ ADD CONSTRAINT chk_check_out_after_in CHECK (check_out_date > check_in_date);
 
 ```sql
 
-UPDATE BOOKINGS SET check_out_date = '2026-05-01' WHERE booking_id = 1;
+UPDATE BOOKINGS SET check_out_date = '2026-05-01' WHERE booking_id = 1020;
 ```
 ##### צילום שגיאת הרצה:
 ![שגיאה אילוץ 1](images/Constraints/constraint1_error.png)
