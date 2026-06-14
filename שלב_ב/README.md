@@ -358,8 +358,8 @@ WHERE r.room_id IN
 ```
 
 ##### צילום מסך – הרצה, ומצב בסיס הנתונים לפני ואחרי:
-![first_5_query1](images/first_5_query1.png)
-![first_5_query1B](images/first_5_query1B.png)
+![first_5_query1](images/update1.png)
+![first_5_query1B](images/update2.png)
 
     
 ###  ⬆️ עדכון 2: סגירת סטטוס הזמנה ל-'COMPLETED' לאחר עזיבה 
