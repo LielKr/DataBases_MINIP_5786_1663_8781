@@ -483,7 +483,10 @@ SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 
 ```
 
 ##### צילומי מסך של שלבי ה-ROLLBACK:
-![שלבי רוקבק]([נתיב לתמונה שלך])
+![שלבי רולבק](images/RollbackCommit/rollback_steps1.png)
+![שלבי רולבק](images/RollbackCommit/rollback_steps2.png)
+![שלבי רולבק](images/RollbackCommit/rollback_steps3.png)
+
 
 ### 💾 בדיקת פקודת COMMIT (סעיף 9)
 ביצענו עדכון סטטוס להזמנה מספר 2, בדקנו את השינוי ושמרנו אותו לצמיתות בדיסק באמצעות פקודת COMMIT.
@@ -504,7 +507,9 @@ COMMIT;
 SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2;
 ```
 ##### צילומי מסך של שלבי ה-COMMIT:
-![שלבי קומיט]([נתיב לתמונה שלך])
+![שלבי קומיט](images/RollbackCommit/commit_steps1.png)
+![שלבי קומיט](images/RollbackCommit/commit_steps2.png)
+![שלבי קומיט](images/RollbackCommit/commit_steps3.png)
 
 ## 6. הוספת אילוצים (Constraints) ובדיקתם
 על מנת להדק את שלמות הנתונים הלוגית, הוספנו 3 אילוצים חדשים למערכת באמצעות פקודות ALTER TABLE. להלן התיאור והוכחת השגיאה בעת ניסיון הפרתם:
@@ -524,8 +529,7 @@ ADD CONSTRAINT chk_check_out_after_in CHECK (check_out_date > check_in_date);
 UPDATE BOOKINGS SET check_out_date = '2026-05-01' WHERE booking_id = 1;
 ```
 ##### צילום שגיאת הרצה:
-![שגיאה אילוץ 1]([נתיב לתמונה שלך])
-
+![שגיאה אילוץ 1](images/Constraints/constraint1_error.png)
 ### 🔒 אילוץ 2: chk_at_least_one_guest
 **תיאור השינוי:** מונע יצירת הזמנות ריקות ללא אורחים פיזיים. מספר האורחים חייב להיות לפחות 1.
 
@@ -541,8 +545,7 @@ INSERT INTO BOOKINGS (booking_id, check_in_date, check_out_date, total_price, nu
 VALUES (8888, '2026-07-01', '2026-07-05', 400, 0, '2026-06-01', 1, 1);
 ```
 ##### צילום שגיאת הרצה:
-![שגיאה אילוץ 2]([נתיב לתמונה שלך])
-
+![שגיאה אילוץ 1](images/Constraints/constraint2_error.png)
 ### 🔒 אילוץ 3: chk_commission_range
 **תיאור השינוי:** מונע טעויות פיננסיות של הזנת אחוזי עמלה שליליים או עמלות הגבוהות מ-100% עבור ערוצי שיווק.
 
@@ -557,8 +560,7 @@ ADD CONSTRAINT chk_commission_range CHECK (commission_rate >= 0 AND commission_r
 UPDATE BOOKING_SOURCES SET commission_rate = -5.5 WHERE source_id = 1;
 ```
 ##### צילום שגיאת הרצה:
-![שגיאה אילוץ 3]([נתיב לתמונה שלך])
-
+![שגיאה אילוץ 1](images/Constraints/constraint3_error.png)
 ## 7. אינדקסים (Indexes) וניתוח זמני ריצה
 כדי לשפר את מהירות שליפת הנתונים במסכי ה-Dashboard והקבלה, יצרנו 3 אינדקסים על שדות מפתח המשמשים לסינון וצירופים (JOIN). בדקנו את ביצועי השאילתות לפני ואחרי יצירת האינדקס בעזרת פקודת EXPLAIN ANALYZE.
 
@@ -586,7 +588,8 @@ CREATE INDEX idx_bookings_guest_id ON BOOKINGS(guest_id);
 ```
 
 ##### תוצאות והסבר מילולי:
-![אינדקס 2 תוצאות]([נתיב לתמונה שלך])
+![אינדקס 2 לפני](images/Index/index2_before.png)
+![אינדקס 2 אחרי](images/Index/index2_after.png)
 
 ### ⚡ אינדקס 3: idx_rooms_status על סטטוס פיזי של חדרים
 **מוטיבציה ותועלת:** מאיץ את שאילתה 3 המציגה חדרים פנויים, ומאפשר למערכת לסנן חדרים במצב 'AVAILABLE' או 'MAINTENANCE' מבלי לסרוק את כל חלקי המלון.
@@ -597,6 +600,8 @@ CREATE INDEX idx_rooms_status ON ROOMS(physical_status);
 ```
 
 ##### תוצאות והסבר מילולי:
-![אינדקס 3 תוצאות]([נתיב לתמונה שלך])
+
+![אינדקס 3 לפני](images/Index/index3_before.png)
+![אינדקס 3 אחרי](images/Index/index3_after.png)
 
 #### הערה חשובה לגבי תוצאות זמני הריצה: במידה ונפח הנתונים הנוכחי בטבלאות קטן (נתוני דוגמה בלבד), מערכת PostgreSQL עשויה לבחור בתוכנית ריצה של Seq Scan (סריקה מלאה) גם כשהאינדקס קיים, מכיוון שטעינת קובץ האינדקס מהדיסק עבור מספר שורות בודד דורשת יותר משאבים מאשר קריאה ישירה של הטבלה. בנפחי נתונים אמיתיים של מלון (עשרות אלפי שורות), האינדקסים יקצרו את זמני הריצה במאות אחוזים.
