@@ -400,7 +400,7 @@ WHERE b.booking_status = 'CONFIRMED'
   (
       SELECT bs.source_id
       FROM BOOKING_SOURCES bs
-      WHERE bs.commission_rate > 15
+      WHERE bs.commission_rate > 10
   );
 ```
 ##### צילום מסך – הרצה, ומצב בסיס הנתונים לפני ואחרי:
