@@ -572,10 +572,9 @@ CREATE INDEX idx_bookings_dates ON BOOKINGS(check_in_date, check_out_date);
 
 ##### בדיקה ללא אינדקס (EXPLAIN ANALYZE):
 
-![אינדקס 1 לפני]([נתיב לתמונה שלך])
-
+![אינדקס 1 לפני](images/Index/index1_before.png)
 ##### בדיקה עם אינדקס קיים (EXPLAIN ANALYZE):
-![אינדקס 1 אחרי]([נתיב לתמונה שלך])
+![אינדקס 1 אחרי](images/Index/index1_after.png)
 
 ### ⚡ אינדקס 2: idx_bookings_guest_id על מפתח זר לקוחות
 **מוטיבציה ותועלת:** משפר דרמטית את מהירות ביצוע ה-LEFT JOIN בשאילתה 4 ושאילתה 5, ומאיץ את שליפת היסטוריית ההזמנות של אורח ספציפי במסכי ה-GUI.
