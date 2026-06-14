@@ -469,17 +469,17 @@ WHERE NOT EXISTS
 
 ```sql
 -- בדיקת המצב המקורי
-SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1;
+SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1010;
 
 BEGIN;
 -- ביצוע השינוי הזמני
-UPDATE BOOKINGS SET booking_status = 'CANCELLED', total_price = 0 WHERE booking_id = 1;
+UPDATE BOOKINGS SET booking_status = 'CANCELLED', total_price = 0 WHERE booking_id = 1010;
 -- בדיקת המצב בתוך הטרנזקציה (השתנה)
-SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1;
+SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1010;
 
 ROLLBACK;
 -- בדיקה לאחר ביטול - חזר לקדמותו
-SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1;
+SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 1010;
 ```
 
 ##### צילומי מסך של שלבי ה-ROLLBACK:
@@ -494,17 +494,17 @@ SELECT booking_id, total_price, booking_status FROM BOOKINGS WHERE booking_id = 
 ```sql
 
 -- בדיקת המצב המקורי
-SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2;
+SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2000;
 
 BEGIN;
 -- ביצוע השינוי
-UPDATE BOOKINGS SET booking_status = 'COMPLETED' WHERE booking_id = 2;
+UPDATE BOOKINGS SET booking_status = 'COMPLETED' WHERE booking_id = 2000;
 -- בדיקה בתוך הטרנזקציה
-SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2;
+SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2000;
 
 COMMIT;
 -- בדיקה לאחר שמירה - השינוי נשאר קבוע
-SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2;
+SELECT booking_id, booking_status FROM BOOKINGS WHERE booking_id = 2000;
 ```
 ##### צילומי מסך של שלבי ה-COMMIT:
 ![שלבי קומיט](images/RollbackCommit/commit_steps1.png)
@@ -526,7 +526,7 @@ ADD CONSTRAINT chk_check_out_after_in CHECK (check_out_date > check_in_date);
 
 ```sql
 
-UPDATE BOOKINGS SET check_out_date = '2026-05-01' WHERE booking_id = 1;
+UPDATE BOOKINGS SET check_out_date = '2026-05-01' WHERE booking_id = 1020;
 ```
 ##### צילום שגיאת הרצה:
 ![שגיאה אילוץ 1](images/Constraints/constraint1_error.png)
