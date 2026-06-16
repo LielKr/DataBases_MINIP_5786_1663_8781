@@ -19,14 +19,15 @@
 ## 1. תיאור התהליך
 
 **האגף המקורי שלנו** מנהל חדרים והזמנות במלון וכולל 7 טבלאות:
+
 - `GUESTS` – אורחים
 - `BOOKINGS` – הזמנות
-- `ROOMS` / `ROOM_TYPES` – חדרים וסוגי חדרים
+- `ROOMS / ROOM_TYPES` – חדרים וסוגי חדרים
 - `ROOM_ASSIGNMENTS` – שיבוץ חדרים להזמנות
 - `CHECK_INS_OUTS` – לוג צ'ק-אין/צ'ק-אאוט בפועל
 - `BOOKING_SOURCES` – מקורות הזמנה (אתרים, סוכנויות)
-
 **האגף שקיבלנו** מנהל אורחים עם מערכת נאמנות וכולל 8 טבלאות:
+<div dir="rtl">
 - `GUEST` – אורח (טבלת אב לירושה)
 - `PRIVATE_GUEST` – אורח פרטי (ירושה)
 - `CORPORATE_GUEST` – אורח עסקי (ירושה)
@@ -35,7 +36,6 @@
 - `GUEST_FEEDBACK` – פידבק על שהייה
 - `GUEST_LOYALTY` – מנוי נאמנות
 - `LOYALTY_TIER` – דרגות נאמנות
-
 ---
 
 ## 2. אלגוריתם הינדוס לאחור (Reverse Engineering)
@@ -47,6 +47,7 @@
 
 ### שלב 2: זיהוי מפתחות ראשיים (PK)
 לכל טבלה זיהינו את המפתח הראשי:
+<div dir="rtl">
 
 | טבלה | PK |
 |------|-----|
@@ -58,6 +59,7 @@
 | GUEST_FEEDBACK | stay_id (FK+PK) |
 | GUEST_LOYALTY | guest_id (FK+PK) |
 | LOYALTY_TIER | tier_id |
+</div>
 
 ### שלב 3: זיהוי מפתחות זרים (FK)
 - `guest_id` ב-`PRIVATE_GUEST` ו-`CORPORATE_GUEST` → מצביע ל-`GUEST`
@@ -69,6 +71,8 @@
 `PRIVATE_GUEST` ו-`CORPORATE_GUEST` חולקות PK עם `GUEST` ויש להן FK אליו → **זו ירושה disjoint** (כל אורח הוא פרטי **או** עסקי, לא שניהם).
 
 ### שלב 5: קביעת cardinality
+<div dir="rtl">
+
 
 | טבלאות | יחס | הסבר |
 |--------|------|-------|
@@ -77,6 +81,7 @@
 | STAY_RECORD → GUEST_FEEDBACK | 1:1 | לשהייה פידבק אחד (אופציונלי) |
 | GUEST → GUEST_LOYALTY | 1:1 | לאורח מנוי נאמנות אחד (אופציונלי) |
 | GUEST_LOYALTY → LOYALTY_TIER | N:1 | מנויים רבים באותה דרגה |
+</div>
 
 ### שלב 6: בניית ה-ERD
 על בסיס הנתונים שאספנו בנינו את ה-ERD ב-ERDPlus.
@@ -130,6 +135,7 @@ ALTER TABLE GUESTS ADD COLUMN created_at DATE;
 הוספת עמודת תאריך יצירה לטבלת אורחים, כדי להתאים לסכמה של האגף שקיבלנו.
 
 ### 🔧 יצירת טבלאות חדשות (CREATE TABLE)
+<div dir="rtl">
 
 | פקודה | תיאור |
 |-------|--------|
@@ -140,6 +146,7 @@ ALTER TABLE GUESTS ADD COLUMN created_at DATE;
 | `CREATE TABLE STAY_RECORD` | טבלת שהיות עם FK ל-GUESTS ול-BOOKINGS |
 | `CREATE TABLE PAYMENT` | טבלת תשלומים עם FK ל-STAY_RECORD |
 | `CREATE TABLE GUEST_FEEDBACK` | טבלת פידבק עם PK+FK ל-STAY_RECORD |
+</div>
 
 ### 🔧 העתקת נתונים
 
