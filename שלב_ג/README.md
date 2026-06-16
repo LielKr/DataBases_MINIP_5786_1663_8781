@@ -72,6 +72,8 @@
 `PRIVATE_GUEST` ו-`CORPORATE_GUEST` חולקות PK עם `GUEST` ויש להן FK אליו → **זו ירושה disjoint** (כל אורח הוא פרטי **או** עסקי, לא שניהם).
 
 ### שלב 5: קביעת cardinality
+<div dir="rtl">
+
 
 | טבלאות | יחס | הסבר |
 |--------|------|-------|
@@ -80,6 +82,7 @@
 | STAY_RECORD → GUEST_FEEDBACK | 1:1 | לשהייה פידבק אחד (אופציונלי) |
 | GUEST → GUEST_LOYALTY | 1:1 | לאורח מנוי נאמנות אחד (אופציונלי) |
 | GUEST_LOYALTY → LOYALTY_TIER | N:1 | מנויים רבים באותה דרגה |
+</div>
 
 ### שלב 6: בניית ה-ERD
 על בסיס הנתונים שאספנו בנינו את ה-ERD ב-ERDPlus.
@@ -133,6 +136,7 @@ ALTER TABLE GUESTS ADD COLUMN created_at DATE;
 הוספת עמודת תאריך יצירה לטבלת אורחים, כדי להתאים לסכמה של האגף שקיבלנו.
 
 ### 🔧 יצירת טבלאות חדשות (CREATE TABLE)
+<div dir="rtl">
 
 | פקודה | תיאור |
 |-------|--------|
@@ -143,6 +147,7 @@ ALTER TABLE GUESTS ADD COLUMN created_at DATE;
 | `CREATE TABLE STAY_RECORD` | טבלת שהיות עם FK ל-GUESTS ול-BOOKINGS |
 | `CREATE TABLE PAYMENT` | טבלת תשלומים עם FK ל-STAY_RECORD |
 | `CREATE TABLE GUEST_FEEDBACK` | טבלת פידבק עם PK+FK ל-STAY_RECORD |
+</div>
 
 ### 🔧 העתקת נתונים
 
