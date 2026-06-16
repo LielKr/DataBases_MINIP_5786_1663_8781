@@ -20,14 +20,12 @@
 
 **האגף המקורי שלנו** מנהל חדרים והזמנות במלון וכולל 7 טבלאות:
 
-<div dir="rtl">
-- `GUESTS` – אורחים
-- `BOOKINGS` – הזמנות
-- `ROOMS` / `ROOM_TYPES` – חדרים וסוגי חדרים
-- `ROOM_ASSIGNMENTS` – שיבוץ חדרים להזמנות
-- `CHECK_INS_OUTS` – לוג צ'ק-אין/צ'ק-אאוט בפועל
-- `BOOKING_SOURCES` – מקורות הזמנה (אתרים, סוכנויות)
-</div>
+- GUESTS – אורחים
+- BOOKINGS – הזמנות
+- ROOMS / ROOM_TYPES – חדרים וסוגי חדרים
+- ROOM_ASSIGNMENTS – שיבוץ חדרים להזמנות
+- CHECK_INS_OUTS – לוג צ'ק-אין/צ'ק-אאוט בפועל
+- BOOKING_SOURCES – מקורות הזמנה (אתרים, סוכנויות)
 **האגף שקיבלנו** מנהל אורחים עם מערכת נאמנות וכולל 8 טבלאות:
 <div dir="rtl">
 - `GUEST` – אורח (טבלת אב לירושה)
@@ -38,7 +36,6 @@
 - `GUEST_FEEDBACK` – פידבק על שהייה
 - `GUEST_LOYALTY` – מנוי נאמנות
 - `LOYALTY_TIER` – דרגות נאמנות
-</div>
 ---
 
 ## 2. אלגוריתם הינדוס לאחור (Reverse Engineering)
