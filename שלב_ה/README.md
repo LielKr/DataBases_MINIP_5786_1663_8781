@@ -15,6 +15,8 @@
 ---
 
 ## כלים וטכנולוגיות
+<div dir="rtl">
+
 
 | רכיב | טכנולוגיה |
 |-------|-----------|
@@ -27,6 +29,7 @@
 | סביבת עבודה | Docker Compose |
 
 ---
+</div>
 
 ## הוראות הפעלה
 
@@ -123,6 +126,7 @@ http://localhost:5000
 
 ### 2. מסכי ניהול טבלאות (CRUD)
 לכל טבלה יש מסך רשימה + טופס הוספה/עריכה:
+<div dir="rtl">
 
 | מסך | טבלה | פעולות |
 |-----|-------|--------|
@@ -138,7 +142,7 @@ http://localhost:5000
 | Stay Records | STAY_RECORD | Create, Read, Delete |
 | Payments | PAYMENT | Create, Read, Delete |
 | Guest Feedback | GUEST_FEEDBACK | Create, Read, Delete |
-
+</div>
 **עקרונות עיצוב:**
 - במקום הצגת מזהים (ID), מוצגים שמות באמצעות JOIN עם טבלאות מקושרות
 - סטטוסים מוצגים עם צבעים (badges): ירוק = AVAILABLE/CONFIRMED, צהוב = OCCUPIED, אדום = CANCELLED
@@ -182,7 +186,6 @@ http://localhost:5000
 ### 1. Dashboard - מסך הבית והדשבורד
 * **תיאור מילולי:** מסך הבית הראשי של המערכת המציג נתונים סטטיסטיים כלליים בזמן אמת (סך הכל חדרים פנויים, אורחים והזמנות) ומאפשר ניווט מהיר לכל מודול במערכת.
 * **קישור להרצה:** `http://localhost:5000/`
-* **שם קובץ תמונה:** `dashboard.png`
 * **צילום מסך:**
   ![Dashboard](images/dashboard.png)
 
@@ -191,7 +194,6 @@ http://localhost:5000
 ### 2. Rooms List - רשימת החדרים במלון
 * **תיאור מילולי:** רשימת כל החדרים הקיימים במלון. מציגה את הקומה, סוג החדר וסטטוס הפניות שלו בעזרת תוויות צבעוניות (AVAILABLE, OCCUPIED, MAINTENANCE).
 * **קישור להרצה:** `http://localhost:5000/rooms`
-* **שם קובץ תמונה:** `rooms_list.png`
 * **צילום מסך:**
   ![Rooms List](images/rooms_list.png)
 
@@ -200,16 +202,16 @@ http://localhost:5000
 ### 3. Add Booking - טופס יצירת הזמנה חדשה (CRUD - Create)
 * **תיאור מילולי:** טופס להוספת הזמנה חדשה המאפשר בחירת אורח ומקור הזמנה מתוך תפריט בחירה (Dropdown) המציג שמות ידידותיים למשתמש במקום מזהים מספריים.
 * **קישור להרצה:** `http://localhost:5000/bookings/add`
-* **שם קובץ תמונה:** `add_booking.png`
 * **צילום מסך:**
   ![Add Booking](images/add_booking.png)
+   ![Add Booki3ng](images/bookind_after_add.png)
+
 
 ---
 
 ### 4. Bookings List - רשימת הזמנות (CRUD - Read)
 * **תיאור מילולי:** מציג את רשימת כל ההזמנות שבוצעו במערכת, ממוינות מהחדשה לישנה, ומאפשר גישה מהירה למסכי העריכה או מחיקה של כל הזמנה.
 * **קישור להרצה:** `http://localhost:5000/bookings`
-* **שם קובץ תמונה:** `bookings_list.png`
 * **צילום מסך:**
   ![Bookings List](images/bookings_list.png)
 
@@ -218,16 +220,15 @@ http://localhost:5000
 ### 5. Edit Room Type - טופס עריכת סוג חדר (CRUD - Update)
 * **תיאור מילולי:** טופס לעדכון פרטי סוג חדר קיים. בעת כניסה למסך זה, המערכת מזהה את מפתח סוג החדר וממלאת אוטומטית את שדות הטופס בפרטים הנוכחיים לשם עריכה קלה.
 * **קישור להרצה:** `http://localhost:5000/room_types/edit/1`
-* **שם קובץ תמונה:** `edit_room_type.png`
 * **צילום מסך:**
   ![Edit Room Type](images/edit_room_type.png)
+  ![Edit Room Type](images/edit_room_type_after.png)
 
 ---
 
 ### 6. Guests List - רשימת אורחים
 * **תיאור מילולי:** רשימת כל האורחים הרשומים במערכת המציגה את פרטיהם האישיים וכן את דרגת מועדון הנאמנות שלהם במידה והם רשומים לתוכנית הנאמנות.
 * **קישור להרצה:** `http://localhost:5000/guests`
-* **שם קובץ תמונה:** `guests.png`
 * **צילום מסך:**
   ![Guests](images/guests.png)
 
@@ -236,7 +237,6 @@ http://localhost:5000
 ### 7. Guest Feedback - פידבקים מאורחים
 * **תיאור מילולי:** מציג את רשימת הפידבקים שהשאירו אורחים על שהיותיהם במלון, כולל דירוג כוכבים, הערה מילולית ותאריך השארת הפידבק.
 * **קישור להרצה:** `http://localhost:5000/feedback`
-* **שם קובץ תמונה:** `guest_feedback.png`
 * **צילום מסך:**
   ![Guest Feedback](images/guest_feedback.png)
 
@@ -245,7 +245,6 @@ http://localhost:5000
 ### 8. Queries Hub - מרכז שאילתות ופעולות
 * **תיאור מילולי:** מסך הניהול הראשי של השאילתות משלב ב' והפרוצדורות/פונקציות משלב ד', המאפשר הרצה שלהן בלחיצת כפתור ישירות מהממשק.
 * **קישור להרצה:** `http://localhost:5000/queries`
-* **שם קובץ תמונה:** `queries_hub.png`
 * **צילום מסך:**
   ![Queries Hub](images/queries_hub.png)
 
@@ -254,7 +253,6 @@ http://localhost:5000
 ### 9. Monthly Revenue - תוצאות שאילתת הכנסות
 * **תיאור מילולי:** מציג את תוצאות הרצת שאילתת רווחים חודשיים משלב ב' המציגה את כמות ההזמנות, סך ההכנסות ומחיר ממוצע בחלוקה לפי חודש ושנה.
 * **קישור להרצה:** `http://localhost:5000/queries/monthly_revenue`
-* **שם קובץ תמונה:** `monthly_revenue.png`
 * **צילום מסך:**
   ![Monthly Revenue](images/monthly_revenue.png)
 
@@ -263,7 +261,6 @@ http://localhost:5000
 ### 10. Calculate Discount - חישוב הנחה לאורח (פונקציה)
 * **תיאור מילולי:** מסך המאפשר להפעיל את הפונקציה `fn_calculate_guest_discount` על אורח ומחיר ספציפי, ומציג את המחיר המקורי לצד המחיר הסופי לאחר הנחה ופיצוי.
 * **קישור להרצה:** `http://localhost:5000/queries/calculate_discount`
-* **שם קובץ תמונה:** `calculate_discount.png`
 * **צילום מסך:**
   ![Calculate Discount](images/calculate_discount.png)
 
@@ -272,7 +269,6 @@ http://localhost:5000
 ### 11. Register Loyalty - רישום אורח למועדון נאמנות (פרוצדורה)
 * **תיאור מילולי:** מסך המאפשר להפעיל את הפרוצדורה `pr_register_loyalty_member` עבור אורח נבחר, ומחשב ומעדכן את דרגת הנאמנות שלו על בסיס סך הוצאותיו.
 * **קישור להרצה:** `http://localhost:5000/queries/register_loyalty`
-* **שם קובץ תמונה:** `register_loyalty.png`
 * **צילום מסך:**
   ![Register Loyalty](images/register_loyalty.png)
 
@@ -281,6 +277,5 @@ http://localhost:5000
 ### 12. Payments List - רשימת תשלומים
 * **תיאור מילולי:** מציג את רשימת כל התשלומים שבוצעו במערכת, מקושרים לשם האורח הרלוונטי ושיטת התשלום שבוצעה.
 * **קישור להרצה:** `http://localhost:5000/payments`
-* **שם קובץ תמונה:** `payments.png`
 * **צילום מסך:**
   ![Payments](images/payments.png)
