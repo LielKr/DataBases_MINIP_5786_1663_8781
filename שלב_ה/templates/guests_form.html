@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if row else 'Add' }} Guest{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-people me-2"></i>{{ 'Edit' if row else 'Add' }} Guest</h2>
+</div>
+<div class="card" style="max-width:600px">
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" name="first_name" class="form-control" value="{{ row.first_name if row else '' }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="last_name" class="form-control" value="{{ row.last_name if row else '' }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Passport Number</label>
+                <input type="text" name="passport_number" class="form-control" value="{{ row.passport_number if row else '' }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <input type="text" name="phone" class="form-control" value="{{ row.phone if row else '' }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" value="{{ row.email if row else '' }}" required>
+            </div>
+            <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save</button>
+            <a href="{{ url_for('guests_list') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

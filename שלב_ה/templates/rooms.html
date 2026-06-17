@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Rooms{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-door-open me-2"></i>Rooms</h2>
+    <a href="{{ url_for('rooms_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Room</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th>Room #</th><th>Floor</th><th>Type</th><th>Status</th><th>Phone Ext.</th><th>Actions</th>
+                </tr></thead>
+                <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td><strong>{{ r.room_id }}</strong></td>
+                    <td>{{ r.floor }}</td>
+                    <td><span class="badge bg-info text-dark">{{ r.type_name }}</span></td>
+                    <td>
+                        {% if r.physical_status == 'AVAILABLE' %}
+                            <span class="badge bg-success badge-status">{{ r.physical_status }}</span>
+                        {% elif r.physical_status == 'OCCUPIED' %}
+                            <span class="badge bg-warning text-dark badge-status">{{ r.physical_status }}</span>
+                        {% elif r.physical_status == 'MAINTENANCE' %}
+                            <span class="badge bg-secondary badge-status">{{ r.physical_status }}</span>
+                        {% else %}
+                            <span class="badge bg-danger badge-status">{{ r.physical_status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ r.phone_extension or '-' }}</td>
+                    <td>
+                        <a href="{{ url_for('rooms_edit', id=r.room_id) }}" class="btn btn-outline-primary btn-action"><i class="bi bi-pencil"></i></a>
+                        <form method="post" action="{{ url_for('rooms_delete', id=r.room_id) }}" class="d-inline" onsubmit="return confirm('Delete this room?')">
+                            <button class="btn btn-outline-danger btn-action"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

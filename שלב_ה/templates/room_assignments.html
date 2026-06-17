@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Room Assignments{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-key me-2"></i>Room Assignments</h2>
+    <a href="{{ url_for('room_assignments_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Assign Room</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th>#</th><th>Guest</th><th>Booking #</th><th>Room</th><th>Type</th><th>Floor</th><th>Assigned</th><th>Actions</th>
+                </tr></thead>
+                <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td>{{ r.assignment_id }}</td>
+                    <td><strong>{{ r.guest_name }}</strong></td>
+                    <td>{{ r.booking_id }}</td>
+                    <td><span class="badge bg-info text-dark">Room {{ r.room_id }}</span></td>
+                    <td>{{ r.type_name }}</td>
+                    <td>{{ r.floor }}</td>
+                    <td>{{ r.assigned_at }}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('room_assignments_delete', id=r.assignment_id) }}" class="d-inline" onsubmit="return confirm('Delete this assignment?')">
+                            <button class="btn btn-outline-danger btn-action"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

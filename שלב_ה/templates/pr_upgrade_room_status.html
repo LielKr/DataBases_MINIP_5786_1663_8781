@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Upgrade Room Status{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-wrench me-2"></i>Upgrade Room Status</h2>
+    <a href="{{ url_for('queries_page') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p class="text-muted mb-0"><i class="bi bi-info-circle me-1"></i>
+            <strong>pr_upgrade_room_status(min_rating)</strong> — Scans all guest feedback and moves rooms that received
+            a rating at or below the specified threshold to MAINTENANCE status. Also logs the reason in the
+            ROOM_MAINTENANCE_LOG table.
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Run Procedure</div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Minimum Rating Threshold</label>
+                        <select name="min_rating" class="form-select" required>
+                            <option value="1">1 - Only terrible ratings</option>
+                            <option value="2" selected>2 - Poor and terrible</option>
+                            <option value="3">3 - Average and below</option>
+                        </select>
+                        <small class="text-muted">Rooms with feedback at or below this rating will be moved to MAINTENANCE</small>
+                    </div>
+                    <button class="btn btn-danger w-100"><i class="bi bi-wrench me-1"></i>Run Maintenance Check</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-light">
+            <div class="card-header">How It Works</div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li class="mb-2">Scans <strong>GUEST_FEEDBACK</strong> for ratings &le; threshold</li>
+                    <li class="mb-2">Finds the <strong>rooms</strong> assigned to those stays</li>
+                    <li class="mb-2">Updates room status to <strong>MAINTENANCE</strong></li>
+                    <li>Logs the action in <strong>ROOM_MAINTENANCE_LOG</strong></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Available Rooms by Type{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-search me-2"></i>Available Rooms by Type</h2>
+    <a href="{{ url_for('queries_page') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p class="text-muted mb-0"><i class="bi bi-info-circle me-1"></i>
+            <strong>fn_get_available_rooms_by_type(type_name, min_floor, cursor)</strong> — Uses a refcursor
+            to return all available rooms of a given type, on or above a minimum floor.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">Search Parameters</div>
+    <div class="card-body">
+        <form method="post" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label">Room Type</label>
+                <select name="type_name" class="form-select" required>
+                    <option value="">-- Select Type --</option>
+                    {% for t in types %}
+                    <option value="{{ t.type_name }}">{{ t.type_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Minimum Floor</label>
+                <input type="number" name="min_floor" class="form-control" min="1" max="50" value="1">
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if result is not none %}
+<div class="card">
+    <div class="card-body p-0">
+        {% if result|length > 0 %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th>Room ID</th><th>Floor</th><th>Phone Extension</th>
+                </tr></thead>
+                <tbody>
+                {% for r in result %}
+                <tr>
+                    <td><strong>Room {{ r.room_id }}</strong></td>
+                    <td><i class="bi bi-building me-1"></i>Floor {{ r.floor }}</td>
+                    <td>{{ r.phone_extension or '-' }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4 text-muted">
+            <i class="bi bi-inbox fs-1"></i>
+            <p class="mt-2">No available rooms found for this criteria.</p>
+        </div>
+        {% endif %}
+    </div>
+    <div class="card-footer text-muted">
+        <small>{{ result|length }} room{{ 's' if result|length != 1 else '' }} found</small>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

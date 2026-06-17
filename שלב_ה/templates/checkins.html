@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Check In / Out{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-box-arrow-in-right me-2"></i>Check In / Out Records</h2>
+    <a href="{{ url_for('checkins_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Record Check In/Out</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th>Log #</th><th>Guest</th><th>Booking #</th><th>Planned In</th><th>Actual In</th><th>Planned Out</th><th>Actual Out</th><th>Actions</th>
+                </tr></thead>
+                <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td>{{ r.log_id }}</td>
+                    <td><strong>{{ r.guest_name }}</strong></td>
+                    <td>{{ r.booking_id }}</td>
+                    <td>{{ r.planned_in }}</td>
+                    <td>
+                        {% if r.actual_check_in %}
+                            <span class="text-success"><i class="bi bi-check-circle"></i> {{ r.actual_check_in }}</span>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ r.planned_out }}</td>
+                    <td>
+                        {% if r.actual_check_out %}
+                            <span class="text-primary"><i class="bi bi-check-circle"></i> {{ r.actual_check_out }}</span>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="post" action="{{ url_for('checkins_delete', log_id=r.log_id, booking_id=r.booking_id) }}" class="d-inline" onsubmit="return confirm('Delete?')">
+                            <button class="btn btn-outline-danger btn-action"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

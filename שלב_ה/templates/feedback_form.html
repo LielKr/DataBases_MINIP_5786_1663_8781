@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Add Feedback{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-chat-dots me-2"></i>Add Guest Feedback</h2>
+</div>
+<div class="card" style="max-width:600px">
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label">Stay</label>
+                <select name="stay_id" class="form-select" required>
+                    <option value="">-- Select Stay --</option>
+                    {% for s in stays %}
+                    <option value="{{ s.stay_id }}">{{ s.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Rating (1-5)</label>
+                <select name="rating" class="form-select" required>
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Good</option>
+                    <option value="3">3 - Average</option>
+                    <option value="2">2 - Poor</option>
+                    <option value="1">1 - Terrible</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Comments</label>
+                <textarea name="comments" class="form-control" rows="3"></textarea>
+            </div>
+            <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Submit</button>
+            <a href="{{ url_for('feedback_list') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

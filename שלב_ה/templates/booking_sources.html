@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Booking Sources{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-globe me-2"></i>Booking Sources</h2>
+    <a href="{{ url_for('booking_sources_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Source</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th>Source Name</th><th>Commission Rate</th><th>Contact Info</th><th>Actions</th>
+                </tr></thead>
+                <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td><strong>{{ r.source_name }}</strong></td>
+                    <td><span class="badge bg-primary badge-status">{{ r.commission_rate }}%</span></td>
+                    <td>{{ r.contact_info or '-' }}</td>
+                    <td>
+                        <a href="{{ url_for('booking_sources_edit', id=r.source_id) }}" class="btn btn-outline-primary btn-action"><i class="bi bi-pencil"></i></a>
+                        <form method="post" action="{{ url_for('booking_sources_delete', id=r.source_id) }}" class="d-inline" onsubmit="return confirm('Delete this source?')">
+                            <button class="btn btn-outline-danger btn-action"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

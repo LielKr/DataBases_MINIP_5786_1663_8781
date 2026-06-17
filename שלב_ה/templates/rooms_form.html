@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if row else 'Add' }} Room{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-door-open me-2"></i>{{ 'Edit' if row else 'Add' }} Room</h2>
+</div>
+<div class="card" style="max-width:600px">
+    <div class="card-body">
+        <form method="post">
+            {% if not row %}
+            <div class="mb-3">
+                <label class="form-label">Room ID</label>
+                <input type="number" name="room_id" class="form-control" required>
+            </div>
+            {% endif %}
+            <div class="mb-3">
+                <label class="form-label">Floor</label>
+                <input type="number" name="floor" class="form-control" min="1" max="50" value="{{ row.floor if row else '' }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select name="physical_status" class="form-select" required>
+                    {% for s in ['AVAILABLE','OCCUPIED','MAINTENANCE','OUT_OF_ORDER'] %}
+                    <option value="{{ s }}" {% if row and row.physical_status == s %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Phone Extension</label>
+                <input type="text" name="phone_extension" class="form-control" value="{{ row.phone_extension if row and row.phone_extension else '' }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Room Type</label>
+                <select name="type_id" class="form-select" required>
+                    {% for t in types %}
+                    <option value="{{ t.type_id }}" {% if row and row.type_id == t.type_id %}selected{% endif %}>{{ t.type_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save</button>
+            <a href="{{ url_for('rooms_list') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

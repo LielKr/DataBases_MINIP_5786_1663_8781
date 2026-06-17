@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Payments{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-credit-card me-2"></i>Payments</h2>
+    <a href="{{ url_for('payments_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Record Payment</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th>#</th><th>Guest</th><th>Stay #</th><th>Date</th><th>Amount</th><th>Method</th><th>Status</th><th>Actions</th>
+                </tr></thead>
+                <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td>{{ r.payment_id }}</td>
+                    <td><strong>{{ r.guest_name }}</strong></td>
+                    <td>{{ r.stay_id }}</td>
+                    <td>{{ r.payment_date }}</td>
+                    <td>${{ "%.2f"|format(r.amount) }}</td>
+                    <td><span class="badge bg-info text-dark badge-status">{{ r.payment_method }}</span></td>
+                    <td>
+                        {% if r.payment_status == 'COMPLETED' %}
+                            <span class="badge bg-success badge-status">COMPLETED</span>
+                        {% elif r.payment_status == 'PENDING' %}
+                            <span class="badge bg-warning text-dark badge-status">PENDING</span>
+                        {% elif r.payment_status == 'REFUNDED' %}
+                            <span class="badge bg-info badge-status">REFUNDED</span>
+                        {% else %}
+                            <span class="badge bg-danger badge-status">FAILED</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="post" action="{{ url_for('payments_delete', id=r.payment_id) }}" class="d-inline" onsubmit="return confirm('Delete?')">
+                            <button class="btn btn-outline-danger btn-action"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Guest Loyalty{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-star me-2"></i>Guest Loyalty Memberships</h2>
+    <a href="{{ url_for('guest_loyalty_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Membership</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th>Guest</th><th>Tier</th><th>Membership #</th><th>Points</th><th>Status</th><th>Actions</th>
+                </tr></thead>
+                <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td><strong>{{ r.guest_name }}</strong></td>
+                    <td>
+                        {% if r.tier_name == 'Platinum' %}
+                            <span class="badge bg-dark badge-status">{{ r.tier_name }}</span>
+                        {% elif r.tier_name == 'Gold' %}
+                            <span class="badge badge-status" style="background:#ffd700;color:#333">{{ r.tier_name }}</span>
+                        {% elif r.tier_name == 'Silver' %}
+                            <span class="badge bg-secondary badge-status">{{ r.tier_name }}</span>
+                        {% else %}
+                            <span class="badge badge-status" style="background:#cd7f32;color:#fff">{{ r.tier_name }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ r.membership_number }}</td>
+                    <td>{{ r.points_balance }}</td>
+                    <td>
+                        {% if r.status == 'ACTIVE' %}
+                            <span class="badge bg-success badge-status">ACTIVE</span>
+                        {% else %}
+                            <span class="badge bg-secondary badge-status">{{ r.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="post" action="{{ url_for('guest_loyalty_delete', id=r.guest_id) }}" class="d-inline" onsubmit="return confirm('Delete?')">
+                            <button class="btn btn-outline-danger btn-action"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

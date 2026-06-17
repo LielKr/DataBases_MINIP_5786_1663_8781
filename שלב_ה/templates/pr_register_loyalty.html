@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Register Loyalty Member{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-star me-2"></i>Register Loyalty Member</h2>
+    <a href="{{ url_for('queries_page') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p class="text-muted mb-0"><i class="bi bi-info-circle me-1"></i>
+            <strong>pr_register_loyalty_member(guest_id)</strong> — Automatically calculates a guest's total spending
+            from completed payments, determines the appropriate loyalty tier (Bronze/Silver/Gold/Platinum),
+            and either creates a new membership or upgrades an existing one.
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Select Guest to Register</div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Guest</label>
+                        <select name="guest_id" class="form-select" required>
+                            <option value="">-- Select Guest --</option>
+                            {% for g in guests %}
+                            <option value="{{ g.guest_id }}">{{ g.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn btn-warning w-100"><i class="bi bi-star me-1"></i>Register / Upgrade Loyalty</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-light">
+            <div class="card-header">Tier Thresholds</div>
+            <div class="card-body">
+                <table class="table table-sm mb-0">
+                    <tr><td><span class="badge badge-status" style="background:#cd7f32;color:#fff">Bronze</span></td><td>Under $500 spent</td></tr>
+                    <tr><td><span class="badge bg-secondary badge-status">Silver</span></td><td>$500 - $1,499</td></tr>
+                    <tr><td><span class="badge badge-status" style="background:#ffd700;color:#333">Gold</span></td><td>$1,500 - $4,999</td></tr>
+                    <tr><td><span class="badge bg-dark badge-status">Platinum</span></td><td>$5,000+</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

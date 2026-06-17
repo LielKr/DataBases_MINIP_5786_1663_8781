@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Add Loyalty Membership{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-star me-2"></i>Add Loyalty Membership</h2>
+</div>
+<div class="card" style="max-width:600px">
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label">Guest</label>
+                <select name="guest_id" class="form-select" required>
+                    <option value="">-- Select Guest --</option>
+                    {% for g in guests %}
+                    <option value="{{ g.guest_id }}">{{ g.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tier</label>
+                <select name="tier_id" class="form-select" required>
+                    {% for t in tiers %}
+                    <option value="{{ t.tier_id }}">{{ t.tier_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Membership Number</label>
+                <input type="text" name="membership_number" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Points Balance</label>
+                <input type="number" name="points_balance" class="form-control" min="0" value="0">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="SUSPENDED">SUSPENDED</option>
+                </select>
+            </div>
+            <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save</button>
+            <a href="{{ url_for('guest_loyalty_list') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

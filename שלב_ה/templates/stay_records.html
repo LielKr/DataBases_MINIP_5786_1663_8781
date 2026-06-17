@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Stay Records{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-journal-text me-2"></i>Stay Records</h2>
+    <a href="{{ url_for('stay_records_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Stay</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th>Stay #</th><th>Guest</th><th>Booking #</th><th>Check In</th><th>Check Out</th><th>Actions</th>
+                </tr></thead>
+                <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td>{{ r.stay_id }}</td>
+                    <td><strong>{{ r.guest_name }}</strong></td>
+                    <td>{{ r.booking_id }}</td>
+                    <td>{{ r.check_in_date }}</td>
+                    <td>{{ r.check_out_date }}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('stay_records_delete', id=r.stay_id) }}" class="d-inline" onsubmit="return confirm('Delete stay and related payments/feedback?')">
+                            <button class="btn btn-outline-danger btn-action"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

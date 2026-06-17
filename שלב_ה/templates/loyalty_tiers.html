@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Loyalty Tiers{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-award me-2"></i>Loyalty Tiers</h2>
+    <a href="{{ url_for('loyalty_tiers_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Tier</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th>Tier Name</th><th>Points Required</th><th>Discount %</th><th>Benefits</th><th>Actions</th>
+                </tr></thead>
+                <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td>
+                        {% if r.tier_name == 'Platinum' %}
+                            <span class="badge bg-dark badge-status"><i class="bi bi-gem me-1"></i>{{ r.tier_name }}</span>
+                        {% elif r.tier_name == 'Gold' %}
+                            <span class="badge badge-status" style="background:#ffd700;color:#333"><i class="bi bi-star-fill me-1"></i>{{ r.tier_name }}</span>
+                        {% elif r.tier_name == 'Silver' %}
+                            <span class="badge bg-secondary badge-status"><i class="bi bi-star me-1"></i>{{ r.tier_name }}</span>
+                        {% else %}
+                            <span class="badge badge-status" style="background:#cd7f32;color:#fff"><i class="bi bi-circle me-1"></i>{{ r.tier_name }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ r.points_required }}</td>
+                    <td>{{ r.discount_percentage }}%</td>
+                    <td>{{ r.benefits_description or '-' }}</td>
+                    <td>
+                        <a href="{{ url_for('loyalty_tiers_edit', id=r.tier_id) }}" class="btn btn-outline-primary btn-action"><i class="bi bi-pencil"></i></a>
+                        <form method="post" action="{{ url_for('loyalty_tiers_delete', id=r.tier_id) }}" class="d-inline" onsubmit="return confirm('Delete?')">
+                            <button class="btn btn-outline-danger btn-action"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

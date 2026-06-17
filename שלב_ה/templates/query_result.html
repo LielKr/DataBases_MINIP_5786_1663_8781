@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-table me-2"></i>{{ title }}</h2>
+    <a href="{{ url_for('queries_page') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to Queries</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p class="text-muted mb-0"><i class="bi bi-info-circle me-1"></i>{{ description }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            {% if rows and rows|length > 0 %}
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                    {% for key in rows[0].keys() %}
+                        <th>{{ key.replace('_', ' ').title() }}</th>
+                    {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in rows %}
+                    <tr>
+                    {% for val in row.values() %}
+                        <td>{{ val }}</td>
+                    {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-inbox fs-1"></i>
+                <p class="mt-2">No results found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% if rows %}
+    <div class="card-footer text-muted">
+        <small>{{ rows|length }} row{{ 's' if rows|length != 1 else '' }} returned</small>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
