@@ -143,6 +143,8 @@ http://localhost:5000
 | Payments | PAYMENT | Create, Read, Delete |
 | Guest Feedback | GUEST_FEEDBACK | Create, Read, Delete |
 </div>
+
+
 **עקרונות עיצוב:**
 - במקום הצגת מזהים (ID), מוצגים שמות באמצעות JOIN עם טבלאות מקושרות
 - סטטוסים מוצגים עם צבעים (badges): ירוק = AVAILABLE/CONFIRMED, צהוב = OCCUPIED, אדום = CANCELLED
