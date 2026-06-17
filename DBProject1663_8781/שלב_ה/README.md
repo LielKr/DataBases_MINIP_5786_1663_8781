@@ -2,7 +2,7 @@
 
 ## Hotel Management System - GUI Application
 
-**פרויקט מיני בבסיסי נתונים | DB5786_1663_8781**
+**מיני פרויקט בבסיסי נתונים | DB5786_1663_8781**
 
 ---
 
@@ -143,6 +143,8 @@ http://localhost:5000
 | Payments | PAYMENT | Create, Read, Delete |
 | Guest Feedback | GUEST_FEEDBACK | Create, Read, Delete |
 </div>
+
+
 **עקרונות עיצוב:**
 - במקום הצגת מזהים (ID), מוצגים שמות באמצעות JOIN עם טבלאות מקושרות
 - סטטוסים מוצגים עם צבעים (badges): ירוק = AVAILABLE/CONFIRMED, צהוב = OCCUPIED, אדום = CANCELLED
@@ -151,14 +153,16 @@ http://localhost:5000
 
 ### 3. מסך שאילתות ופרוצדורות
 מסך מרכזי המאפשר הפעלת:
+<div dir="rtl">
 
 #### שאילתות משלב ב':
-1. **Upcoming Bookings** (Query 1) - הזמנות עתידיות מאושרות עם פרטי אורח ומקור
-2. **Monthly Revenue** (Query 2) - דוח הכנסות חודשי עם ממוצעים
-3. **Source Performance** (Query 6) - ביצועי מקורות הזמנה כולל עמלות
-4. **Guest Spending** (Query 4) - דירוג אורחים לפי הוצאות
+1. **ה Upcoming Bookings** (Query 1) - הזמנות עתידיות מאושרות עם פרטי אורח ומקור
+2. **ה Monthly Revenue** (Query 2) - דוח הכנסות חודשי עם ממוצעים
+3. **ה Source Performance** (Query 6) - ביצועי מקורות הזמנה כולל עמלות
+4. **ה Guest Spending** (Query 4) - דירוג אורחים לפי הוצאות
 
 #### פונקציות משלב ד':
+
 1. **fn_calculate_guest_discount** - חישוב הנחת נאמנות + פיצוי לאורח, עם הצגת מחיר מקורי מול מחיר מוזל
 2. **fn_get_available_rooms_by_type** - חיפוש חדרים פנויים לפי סוג וקומה מינימלית (עם cursor)
 
@@ -166,18 +170,19 @@ http://localhost:5000
 1. **pr_register_loyalty_member** - רישום/שדרוג אוטומטי של חברות נאמנות על בסיס הוצאות
 2. **pr_upgrade_room_status** - העברת חדרים עם דירוג נמוך לתחזוקה
 
+
 ---
 
 ## תכונות UI מיוחדות
 
-- **Sidebar קבוע** - ניווט קל לכל חלקי המערכת
+- **ה Sidebar קבוע** - ניווט קל לכל חלקי המערכת
 - **רספונסיביות** - תמיכה במסכים קטנים עם תפריט נסתר
 - **עיצוב מודרני** - גרדיאנטים, כרטיסיות צבעוניות, אייקונים
 - **הודעות Flash** - הצלחה/שגיאה מוצגות לאחר כל פעולה
 - **אישור מחיקה** - חלון אישור לפני כל מחיקה
 - **Foreign Key Resolution** - הצגת שמות במקום מזהים בכל הטבלאות
 - **Color-coded Badges** - סטטוסים מוצגים בצבעים אינטואיטיביים
-
+</div>
 ---
 
 ## Screenshots - צילומי מסך והסברים
