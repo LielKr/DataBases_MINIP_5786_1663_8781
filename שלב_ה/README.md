@@ -204,7 +204,8 @@ http://localhost:5000
 * **קישור להרצה:** `http://localhost:5000/bookings/add`
 * **צילום מסך:**
   ![Add Booking](images/add_booking.png)
-  ![Add Booking](images/bookind_after add.png)
+   ![Add Booki3ng](images/bookind_after_add.png)
+
 
 ---
 
