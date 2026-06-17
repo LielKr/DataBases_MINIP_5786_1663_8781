@@ -229,8 +229,8 @@ INSERT INTO PAYMENT (payment_id, payment_date, amount, payment_method, payment_s
 
 -- נתוני פידבק
 INSERT INTO GUEST_FEEDBACK (stay_id, rating, comments, feedback_date) VALUES
-(11,   5, 'Excellent service and clean rooms!', '2024-06-06'),
-(12,   4, 'Good stay, breakfast could be better', '2024-06-05'),
+(1011,   5, 'Excellent service and clean rooms!', '2024-06-06'),
+(1012,   4, 'Good stay, breakfast could be better', '2024-06-05'),
 (1001, 3, 'Average experience', '2024-06-07'),
 (1002, 5, 'Perfect! Will come back', '2024-06-08'),
 (1003, 4, NULL, '2024-06-09'),
