@@ -1,196 +1,175 @@
--- =========================================
---           RESERVATIONS MODULE
--- =========================================
+-- ============================================================
+-- insertTables.sql – שיטה 1: הכנסה ידנית
+-- ============================================================
 
--- Insert sample guests
-INSERT INTO Guest (FirstName, LastName, Email, Phone, PassportNumber)
-VALUES
-('John', 'Doe', 'john.doe@gmail.com', '1234567890', 'G123456'),
-('Jane', 'Smith', 'jane.smith@yahoo.com', '0987654321', 'G654321'),
-('Mike', 'Johnson', 'mike.johnson@outlook.com', '1122334455', 'G234567'),
-('Sarah', 'Williams', 'sarah.williams@hotmail.com', '2233445566', 'G345678'),
-('David', 'Brown', 'david.brown92@gmail.com', '3344556677', 'G456789'),
-('Emily', 'Jones', 'emily.jones@icloud.com', '4455667788', 'G567890'),
-('Chris', 'Garcia', 'chrisgarcia77@outlook.com', '5566778899', 'G678901'),
-('Lisa', 'Miller', 'lisa.miller@yahoo.com', '6677889900', 'G789012'),
-('James', 'Davis', 'jdavis85@gmail.com', '7788990011', 'G890123'),
-('Mary', 'Rodriguez', 'mary.rodriguez@hotmail.com', '8899001122', 'G901234');
+-- ------------------------------------------------------------
+-- 1. ROOM_TYPES
+-- ------------------------------------------------------------
+INSERT INTO ROOM_TYPES (type_id, type_name, base_price, max_occupancy, description) VALUES
+(1, 'Single',        350.00, 1, 'חדר יחיד בסיסי עם מיטה אחת'),
+(2, 'Double',        500.00, 2, 'חדר זוגי עם מיטה זוגית'),
+(3, 'Twin',          480.00, 2, 'חדר עם שתי מיטות יחיד'),
+(4, 'Deluxe Double', 750.00, 2, 'חדר זוגי מפואר עם נוף'),
+(5, 'Junior Suite', 1200.00, 3, 'סוויטה קטנה עם סלון נפרד'),
+(6, 'Suite',        2000.00, 4, 'סוויטה מלאה עם חדר שינה וסלון'),
+(7, 'Family Room',   900.00, 4, 'חדר משפחתי עם מיטה זוגית ושתי מיטות יחיד');
 
--- Insert reservation statuses
-INSERT INTO ReservationStatus (StatusName)
-VALUES
-('Booked'),
-('Cancelled'),
-('Completed'),
-('No Show'),
-('Checked In');
+-- ------------------------------------------------------------
+-- 2. BOOKING_SOURCES
+-- ------------------------------------------------------------
+INSERT INTO BOOKING_SOURCES (source_id, source_name, commission_rate, contact_info) VALUES
+(1, 'Booking.com',    15.00, 'support@booking.com'),
+(2, 'Expedia',        12.00, 'partners@expedia.com'),
+(3, 'Hotel Website',   0.00, 'reservations@hotel.com'),
+(4, 'Phone Direct',    0.00, '03-1234567'),
+(5, 'Travel Agent',   10.00, 'agent@travelco.co.il'),
+(6, 'Airbnb',          8.00, 'support@airbnb.com'),
+(7, 'Walk-in',         0.00, 'Front Desk');
 
--- Insert reservation sources
-INSERT INTO ReservationSource (SourceName)
-VALUES
-('Website'),
-('Booking.com'),
-('Expedia'),
-('Walk-in'),
-('Phone');
+-- ------------------------------------------------------------
+-- 3. ROOMS
+-- ------------------------------------------------------------
+INSERT INTO ROOMS (room_id, floor, physical_status, phone_extension, type_id) VALUES
+(101, 1, 'AVAILABLE', '101', 1),
+(102, 1, 'AVAILABLE', '102', 1),
+(103, 1, 'OCCUPIED',  '103', 2),
+(104, 1, 'AVAILABLE', '104', 2),
+(105, 1, 'MAINTENANCE','105',3),
+(106, 1, 'AVAILABLE', '106', 3),
+(201, 2, 'AVAILABLE', '201', 1),
+(202, 2, 'OCCUPIED',  '202', 2),
+(203, 2, 'AVAILABLE', '203', 2),
+(204, 2, 'AVAILABLE', '204', 3),
+(205, 2, 'AVAILABLE', '205', 4),
+(206, 2, 'OCCUPIED',  '206', 4),
+(301, 3, 'AVAILABLE', '301', 2),
+(302, 3, 'AVAILABLE', '302', 2),
+(303, 3, 'OCCUPIED',  '303', 4),
+(304, 3, 'AVAILABLE', '304', 4),
+(305, 3, 'AVAILABLE', '305', 5),
+(401, 4, 'AVAILABLE', '401', 3),
+(402, 4, 'OCCUPIED',  '402', 3),
+(403, 4, 'AVAILABLE', '403', 4),
+(404, 4, 'AVAILABLE', '404', 5),
+(405, 4, 'AVAILABLE', '405', 5),
+(501, 5, 'AVAILABLE', '501', 4),
+(502, 5, 'OCCUPIED',  '502', 4),
+(503, 5, 'AVAILABLE', '503', 5),
+(504, 5, 'AVAILABLE', '504', 6),
+(601, 6, 'AVAILABLE', '601', 5),
+(602, 6, 'AVAILABLE', '602', 5),
+(603, 6, 'OCCUPIED',  '603', 6),
+(604, 6, 'AVAILABLE', '604', 6),
+(701, 7, 'AVAILABLE', '701', 6),
+(702, 7, 'AVAILABLE', '702', 7),
+(703, 7, 'OCCUPIED',  '703', 7),
+(704, 7, 'AVAILABLE', '704', 7),
+(801, 8, 'AVAILABLE', '801', 6),
+(802, 8, 'AVAILABLE', '802', 6),
+(803, 8, 'OUT_OF_ORDER','803',7),
+(804, 8, 'AVAILABLE', '804', 7);
 
--- Insert sample reservations
-INSERT INTO Reservation (GuestID, StatusID, SourceID, CheckInDate, CheckOutDate)
-VALUES
-(1, 1, 1, '2024-06-01', '2024-06-05'),
-(2, 1, 2, '2024-06-02', '2024-06-04'),
-(3, 1, 3, '2024-06-03', '2024-06-06'),
-(4, 1, 1, '2024-06-04', '2024-06-07'),
-(5, 1, 4, '2024-06-05', '2024-06-08'),
-(6, 1, 5, '2024-06-06', '2024-06-09'),
-(7, 1, 1, '2024-06-07', '2024-06-10'),
-(8, 1, 2, '2024-06-08', '2024-06-11'),
-(9, 1, 3, '2024-06-09', '2024-06-12'),
-(10, 1, 4, '2024-06-10', '2024-06-13');
+-- ------------------------------------------------------------
+-- 4. GUESTS
+-- ------------------------------------------------------------
+INSERT INTO GUESTS (guest_id, first_name, last_name, passport_number, phone, email, registration_date) VALUES
+(1,  'יוסי',    'כהן',      'IL10000001', '050-1111111', 'yossi.cohen@gmail.com',      '2023-01-15'),
+(2,  'מירי',    'לוי',       'IL10000002', '052-2222222', 'miri.levi@gmail.com',         '2023-02-20'),
+(3,  'דוד',     'מזרחי',    'IL10000003', '054-3333333', 'david.mizrahi@gmail.com',     '2023-03-10'),
+(4,  'רחל',     'פרץ',       'IL10000004', '053-4444444', 'rachel.peretz@gmail.com',     '2023-04-05'),
+(5,  'אמיר',    'ביטון',    'IL10000005', '058-5555555', 'amir.biton@gmail.com',        '2023-05-18'),
+(6,  'שרה',     'אברהם',   'IL10000006', '050-6666666', 'sara.avraham@gmail.com',      '2023-06-22'),
+(7,  'אלי',     'גולן',     'IL10000007', '052-7777777', 'eli.golan@gmail.com',         '2023-07-30'),
+(8,  'נועה',    'שפירא',   'IL10000008', '054-8888888', 'noa.shapira@gmail.com',       '2023-08-14'),
+(9,  'רון',     'דהן',      'IL10000009', '053-9999999', 'ron.dahan@gmail.com',         '2023-09-01'),
+(10, 'טל',      'כץ',       'IL10000010', '058-1010101', 'tal.katz@gmail.com',          '2023-10-10'),
+(11, 'John',    'Smith',    'US20000001', '555-0101',    'john.smith@email.com',        '2023-01-20'),
+(12, 'Emma',    'Johnson',  'US20000002', '555-0202',    'emma.johnson@email.com',      '2023-02-14'),
+(13, 'Luca',    'Ferrari',  'IT30000001', '+39-111111',  'luca.ferrari@email.it',       '2023-03-25'),
+(14, 'Marie',   'Dubois',   'FR40000001', '+33-222222',  'marie.dubois@email.fr',       '2023-04-18'),
+(15, 'Ahmed',   'Hassan',   'EG50000001', '+20-333333',  'ahmed.hassan@email.eg',       '2023-05-07'),
+(16, 'ליאל',    'כרמי',    'IL10000016', '050-1616161', 'liel.carmi@gmail.com',        '2023-06-30'),
+(17, 'אורי',    'נחום',    'IL10000017', '052-1717171', 'uri.nahum@gmail.com',         '2023-07-12'),
+(18, 'דנה',     'ברק',      'IL10000018', '054-1818181', 'dana.barak@gmail.com',        '2023-08-22'),
+(19, 'גיל',     'עמר',      'IL10000019', '053-1919191', 'gil.omer@gmail.com',          '2023-09-15'),
+(20, 'יעל',     'רוזן',    'IL10000020', '058-2020202', 'yael.rosen@gmail.com',        '2023-10-28');
 
--- Insert sample rooms
-INSERT INTO Room (RoomNumber, Floor)
-VALUES
-(101, 1),
-(102, 1),
-(103, 1),
-(201, 2),
-(202, 2),
-(203, 2),
-(301, 3),
-(302, 3),
-(303, 3),
-(401, 4);
+-- ------------------------------------------------------------
+-- 5. BOOKINGS
+-- ------------------------------------------------------------
+INSERT INTO BOOKINGS (booking_id, booking_date, check_in_date, check_out_date, num_guests, total_price, guest_id, source_id) VALUES
+(1001, '2024-01-10', '2024-02-01', '2024-02-03', 1,  700.00,  1,  3),
+(1002, '2024-01-15', '2024-02-10', '2024-02-15', 2, 2500.00,  2,  1),
+(1003, '2024-01-20', '2024-02-20', '2024-02-22', 2,  960.00,  3,  2),
+(1004, '2024-02-01', '2024-03-01', '2024-03-05', 3, 4800.00,  4,  5),
+(1005, '2024-02-05', '2024-03-10', '2024-03-12', 1,  700.00,  5,  3),
+(1006, '2024-02-10', '2024-03-15', '2024-03-20', 2, 3750.00,  6,  1),
+(1007, '2024-02-14', '2024-04-01', '2024-04-03', 4, 1800.00,  7,  4),
+(1008, '2024-02-20', '2024-04-10', '2024-04-14', 2, 3000.00,  8,  2),
+(1009, '2024-03-01', '2024-04-20', '2024-04-22', 1,  700.00,  9,  3),
+(1010, '2024-03-05', '2024-05-01', '2024-05-05', 2, 2000.00, 10,  1),
+(1011, '2024-03-10', '2024-05-10', '2024-05-12', 2, 1500.00, 11,  6),
+(1012, '2024-03-15', '2024-05-20', '2024-05-25', 2, 3750.00, 12,  2),
+(1013, '2024-03-20', '2024-06-01', '2024-06-03', 1,  700.00, 13,  3),
+(1014, '2024-04-01', '2024-06-10', '2024-06-15', 3, 6000.00, 14,  5),
+(1015, '2024-04-05', '2024-06-20', '2024-06-22', 2,  960.00, 15,  4),
+(1016, '2024-04-10', '2024-07-01', '2024-07-07', 2, 4500.00, 16,  1),
+(1017, '2024-04-15', '2024-07-10', '2024-07-12', 1,  700.00, 17,  3),
+(1018, '2024-04-20', '2024-07-15', '2024-07-20', 4, 4500.00, 18,  2),
+(1019, '2024-05-01', '2024-08-01', '2024-08-05', 2, 3000.00, 19,  1),
+(1020, '2024-05-05', '2024-08-10', '2024-08-12', 2, 1500.00, 20,  6),
+(1021, '2024-05-10', '2024-08-20', '2024-08-25', 1, 1750.00,  1,  3),
+(1022, '2024-05-15', '2024-09-01', '2024-09-03', 2, 1000.00,  2,  7),
+(1023, '2024-05-20', '2024-09-10', '2024-09-15', 3, 6000.00,  3,  5),
+(1024, '2024-06-01', '2024-09-20', '2024-09-22', 2,  960.00,  4,  4),
+(1025, '2024-06-05', '2024-10-01', '2024-10-05', 2, 2000.00,  5,  1);
 
--- Insert sample reservation-room links
-INSERT INTO ReservationRoom (ReservationID, RoomID)
-VALUES
-(1, 1),
-(2, 2),
-(3, 3),
-(4, 4),
-(5, 5),
-(6, 6),
-(7, 7),
-(8, 8),
-(9, 9),
-(10, 10);
+-- ------------------------------------------------------------
+-- 6. ROOM_ASSIGNMENTS
+-- ------------------------------------------------------------
+INSERT INTO ROOM_ASSIGNMENTS (assignment_id, assigned_at, booking_id, room_id) VALUES
+(1,  '2024-01-11', 1001, 101),
+(2,  '2024-01-16', 1002, 203),
+(3,  '2024-01-21', 1003, 301),
+(4,  '2024-02-02', 1004, 405),
+(5,  '2024-02-06', 1005, 102),
+(6,  '2024-02-11', 1006, 305),
+(7,  '2024-02-15', 1007, 702),
+(8,  '2024-02-21', 1008, 206),
+(9,  '2024-03-02', 1009, 201),
+(10, '2024-03-06', 1010, 104),
+(11, '2024-03-11', 1011, 202),
+(12, '2024-03-16', 1012, 304),
+(13, '2024-03-21', 1013, 106),
+(14, '2024-04-02', 1014, 504),
+(15, '2024-04-06', 1015, 302),
+(16, '2024-04-11', 1016, 205),
+(17, '2024-04-16', 1017, 201),
+(18, '2024-04-21', 1018, 703),
+(19, '2024-05-02', 1019, 303),
+(20, '2024-05-06', 1020, 204),
+(21, '2024-05-11', 1021, 503),
+(22, '2024-05-16', 1022, 103),
+(23, '2024-05-21', 1023, 603),
+(24, '2024-06-02', 1024, 402),
+(25, '2024-06-06', 1025, 502);
 
--- Insert sample reservation histories
-INSERT INTO ReservationHistory (ReservationID, StatusID)
-VALUES
-(1, 1),
-(2, 1),
-(3, 1),
-(4, 1),
-(5, 1),
-(6, 1),
-(7, 1),
-(8, 1),
-(9, 1),
-(10, 1);
-
-
--- =========================================
---           FRONT DESK MODULE
--- =========================================
-
--- Insert sample employees
-INSERT INTO Employee (FirstName, LastName, Role)
-VALUES
-('Alice', 'Smith', 'Receptionist'),
-('Bob', 'Johnson', 'Receptionist'),
-('Charlie', 'Williams', 'Manager'),
-('Diana', 'Brown', 'Receptionist'),
-('Ethan', 'Jones', 'Manager'),
-('Fiona', 'Garcia', 'Receptionist'),
-('George', 'Miller', 'Receptionist'),
-('Hannah', 'Davis', 'Manager'),
-('Ian', 'Rodriguez', 'Receptionist'),
-('Julia', 'Martinez', 'Manager');
-
--- Insert sample check-ins
-INSERT INTO CheckIn (ReservationID, EmployeeID, CheckInDate)
-VALUES
-(1, 1, '2024-06-01 14:30:00'),
-(2, 2, '2024-06-02 15:00:00'),
-(3, 3, '2024-06-03 14:45:00'),
-(4, 4, '2024-06-04 15:15:00'),
-(5, 5, '2024-06-05 14:20:00'),
-(6, 6, '2024-06-06 15:30:00'),
-(7, 7, '2024-06-07 14:40:00'),
-(8, 8, '2024-06-08 15:10:00'),
-(9, 9, '2024-06-09 14:50:00'),
-(10, 10, '2024-06-10 15:20:00');
-
--- Insert sample check-outs
-INSERT INTO CheckOut (CheckInID, CheckOutDate, PaymentStatus)
-VALUES
-(1, '2024-06-05 11:00:00', 'Paid'),
-(2, '2024-06-04 10:30:00', 'Paid'),
-(3, '2024-06-06 11:30:00', 'Paid'),
-(4, '2024-06-07 10:45:00', 'Paid'),
-(5, '2024-06-08 11:15:00', 'Paid'),
-(6, '2024-06-09 10:15:00', 'Paid'),
-(7, '2024-06-10 11:45:00', 'Paid'),
-(8, '2024-06-11 10:30:00', 'Paid'),
-(9, '2024-06-12 11:15:00', 'Paid'),
-(10, '2024-06-13 10:45:00', 'Paid');
-
--- Insert sample room assignments
-INSERT INTO RoomAssignment (CheckInID, RoomID, AssignedDate)
-VALUES
-(1, 1, '2024-06-01 14:30:00'),
-(2, 2, '2024-06-02 15:00:00'),
-(3, 3, '2024-06-03 14:45:00'),
-(4, 4, '2024-06-04 15:15:00'),
-(5, 5, '2024-06-05 14:20:00'),
-(6, 6, '2024-06-06 15:30:00'),
-(7, 7, '2024-06-07 14:40:00'),
-(8, 8, '2024-06-08 15:10:00'),
-(9, 9, '2024-06-09 14:50:00'),
-(10, 10, '2024-06-10 15:20:00');
-
--- Insert sample early check-ins
-INSERT INTO EarlyCheckIn (CheckInID, Approved, ExtraFee)
-VALUES
-(1, TRUE, 25.00),
-(3, TRUE, 20.00),
-(5, FALSE, 0.00),
-(7, TRUE, 30.00),
-(9, FALSE, 0.00);
-
--- Insert sample late check-outs
-INSERT INTO LateCheckOut (CheckOutID, Approved, ExtraFee)
-VALUES
-(1, TRUE, 50.00),
-(3, TRUE, 40.00),
-(5, FALSE, 0.00),
-(7, TRUE, 60.00),
-(9, FALSE, 0.00);
-
--- Insert sample front desk logs
-INSERT INTO FrontDeskLog (EmployeeID, ActionDescription)
-VALUES
-(1, 'Checked in guest John Doe'),
-(2, 'Checked in guest Jane Smith'),
-(3, 'Checked in guest Mike Johnson'),
-(4, 'Checked in guest Sarah Williams'),
-(5, 'Checked in guest David Brown'),
-(6, 'Checked in guest Emily Jones'),
-(7, 'Checked in guest Chris Garcia'),
-(8, 'Checked in guest Lisa Miller'),
-(9, 'Checked in guest James Davis'),
-(10, 'Checked in guest Mary Rodriguez'),
-(1, 'Processed check-out for John Doe'),
-(2, 'Processed check-out for Jane Smith'),
-(3, 'Processed check-out for Mike Johnson'),
-(4, 'Processed check-out for Sarah Williams'),
-(5, 'Processed check-out for David Brown'),
-(6, 'Processed check-out for Emily Jones'),
-(7, 'Processed check-out for Chris Garcia'),
-(8, 'Processed check-out for Lisa Miller'),
-(9, 'Processed check-out for James Davis'),
-(10, 'Processed check-out for Mary Rodriguez');       
-               
-commit;
+-- ------------------------------------------------------------
+-- 7. CHECK_INS_OUTS
+-- ------------------------------------------------------------
+INSERT INTO CHECK_INS_OUTS (log_id, booking_id, actual_check_in, actual_check_out) VALUES
+(1,  1001, '2024-02-01', '2024-02-03'),
+(2,  1002, '2024-02-10', '2024-02-15'),
+(3,  1003, '2024-02-20', '2024-02-22'),
+(4,  1004, '2024-03-01', '2024-03-05'),
+(5,  1005, '2024-03-10', '2024-03-12'),
+(6,  1006, '2024-03-15', '2024-03-20'),
+(7,  1007, '2024-04-01', '2024-04-03'),
+(8,  1008, '2024-04-10', '2024-04-14'),
+(9,  1009, '2024-04-20', '2024-04-22'),
+(10, 1010, '2024-05-01', '2024-05-05'),
+(11, 1011, '2024-05-10', '2024-05-12'),
+(12, 1012, '2024-05-20', '2024-05-26'),
+(13, 1013, '2024-06-01', '2024-06-03'),
+(14, 1014, '2024-06-10', '2024-06-15'),
+(15, 1015, '2024-06-20', '2024-06-23');
