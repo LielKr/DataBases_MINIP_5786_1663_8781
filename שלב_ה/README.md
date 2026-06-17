@@ -126,6 +126,7 @@ http://localhost:5000
 
 ### 2. מסכי ניהול טבלאות (CRUD)
 לכל טבלה יש מסך רשימה + טופס הוספה/עריכה:
+<div dir="rtl">
 
 | מסך | טבלה | פעולות |
 |-----|-------|--------|
@@ -141,7 +142,7 @@ http://localhost:5000
 | Stay Records | STAY_RECORD | Create, Read, Delete |
 | Payments | PAYMENT | Create, Read, Delete |
 | Guest Feedback | GUEST_FEEDBACK | Create, Read, Delete |
-
+</div>
 **עקרונות עיצוב:**
 - במקום הצגת מזהים (ID), מוצגים שמות באמצעות JOIN עם טבלאות מקושרות
 - סטטוסים מוצגים עם צבעים (badges): ירוק = AVAILABLE/CONFIRMED, צהוב = OCCUPIED, אדום = CANCELLED
