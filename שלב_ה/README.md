@@ -178,17 +178,40 @@ http://localhost:5000
 
 ## Screenshots - צילומי מסך
 
-להלן רשימת המסכים המומלצים לצילום:
+להלן רשימת המסכים לצילום (יש לשמור את התמונות בתיקייה `שלב_ה/images` בשמות המצוינים מטה):
 
-1. **Dashboard** - `http://localhost:5000/` - מסך כניסה ראשי עם סטטיסטיקות
-2. **Rooms List** - `http://localhost:5000/rooms` - רשימת חדרים עם סטטוסים צבעוניים
-3. **Add Booking** - `http://localhost:5000/bookings/add` - טופס יצירת הזמנה (CRUD - Create)
-4. **Bookings List** - `http://localhost:5000/bookings` - רשימת הזמנות (CRUD - Read)
-5. **Edit Room Type** - `http://localhost:5000/room_types/edit/1` - עריכת סוג חדר (CRUD - Update)
-6. **Guests** - `http://localhost:5000/guests` - רשימת אורחים עם דרגת נאמנות
-7. **Guest Feedback** - `http://localhost:5000/feedback` - פידבק עם כוכבים
-8. **Queries Hub** - `http://localhost:5000/queries` - מסך שאילתות ופרוצדורות
-9. **Monthly Revenue** - `http://localhost:5000/queries/monthly_revenue` - תוצאות שאילתה
-10. **Calculate Discount** - `http://localhost:5000/queries/calculate_discount` - הפעלת פונקציה
-11. **Register Loyalty** - `http://localhost:5000/queries/register_loyalty` - הפעלת פרוצדורה
-12. **Payments** - `http://localhost:5000/payments` - רשימת תשלומים
+1. **Dashboard** (`http://localhost:5000/`) - מסך כניסה ראשי עם סטטיסטיקות:
+   ![Dashboard](images/dashboard.png)
+
+2. **Rooms List** (`http://localhost:5000/rooms`) - רשימת חדרים עם סטטוסים צבעוניים:
+   ![Rooms List](images/rooms_list.png)
+
+3. **Add Booking** (`http://localhost:5000/bookings/add`) - טופס יצירת הזמנה (CRUD - Create):
+   ![Add Booking](images/add_booking.png)
+
+4. **Bookings List** (`http://localhost:5000/bookings`) - רשימת הזמנות (CRUD - Read):
+   ![Bookings List](images/bookings_list.png)
+
+5. **Edit Room Type** (`http://localhost:5000/room_types/edit/1`) - עריכת סוג חדר (CRUD - Update):
+   ![Edit Room Type](images/edit_room_type.png)
+
+6. **Guests** (`http://localhost:5000/guests`) - רשימת אורחים עם דרגת נאמנות:
+   ![Guests](images/guests.png)
+
+7. **Guest Feedback** (`http://localhost:5000/feedback`) - פידבק עם כוכבים:
+   ![Guest Feedback](images/guest_feedback.png)
+
+8. **Queries Hub** (`http://localhost:5000/queries`) - מסך שאילתות ופרוצדורות:
+   ![Queries Hub](images/queries_hub.png)
+
+9. **Monthly Revenue** (`http://localhost:5000/queries/monthly_revenue`) - תוצאות שאילתה:
+   ![Monthly Revenue](images/monthly_revenue.png)
+
+10. **Calculate Discount** (`http://localhost:5000/queries/calculate_discount`) - הפעלת פונקציה:
+    ![Calculate Discount](images/calculate_discount.png)
+
+11. **Register Loyalty** (`http://localhost:5000/queries/register_loyalty`) - הפעלת פרוצדורה:
+    ![Register Loyalty](images/register_loyalty.png)
+
+12. **Payments** (`http://localhost:5000/payments`) - רשימת תשלומים:
+    ![Payments](images/payments.png)
