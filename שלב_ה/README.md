@@ -166,12 +166,20 @@ http://localhost:5000
 1. **fn_calculate_guest_discount** - חישוב הנחת נאמנות + פיצוי לאורח, עם הצגת מחיר מקורי מול מחיר מוזל
 2. **fn_get_available_rooms_by_type** - חיפוש חדרים פנויים לפי סוג וקומה מינימלית (עם cursor)
 </div>
+
+
+
 #### פרוצדורות משלב ד':
+
+
 <div dir="rtl">
 
 1. **pr_register_loyalty_member** - רישום/שדרוג אוטומטי של חברות נאמנות על בסיס הוצאות
 2. **pr_upgrade_room_status** - העברת חדרים עם דירוג נמוך לתחזוקה
 </div>
+
+
+
 ---
 
 ## תכונות UI מיוחדות
