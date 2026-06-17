@@ -204,6 +204,7 @@ http://localhost:5000
 * **קישור להרצה:** `http://localhost:5000/bookings/add`
 * **צילום מסך:**
   ![Add Booking](images/add_booking.png)
+  ![Add Booking](images/bookind_after add.png)
 
 ---
 
@@ -220,6 +221,7 @@ http://localhost:5000
 * **קישור להרצה:** `http://localhost:5000/room_types/edit/1`
 * **צילום מסך:**
   ![Edit Room Type](images/edit_room_type.png)
+  ![Edit Room Type](images/edit_room_type_after.png)
 
 ---
 
