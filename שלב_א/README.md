@@ -26,9 +26,13 @@ The system uses foreign keys, weak entities, and entity relationships to maintai
 
 ## AI Studio App- 4 screens:
 url: https://ai.studio/apps/9bac2e5d-574d-447b-bb42-d4fb6f1da2ec
+###Dashboard
 ![screen 1](images/AIStudio_1.png)
+###Guests
 ![screen 2](images/AIStudio_2.png)
+###Booking & Reservations
 ![screen 3](images/AIStudio_3.png)
+###Rooms
 ![screen 4](images/AIStudio_4.png)
 
 ## 📁 ERD and DSD Diagrams
