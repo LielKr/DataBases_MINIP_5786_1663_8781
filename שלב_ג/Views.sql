@@ -71,8 +71,8 @@ ORDER BY total_revenue DESC;
 CREATE OR REPLACE VIEW v_guest_stay_summary AS
 SELECT
     g.guest_id,
-    g.first_name,
-    g.last_name,
+    COALESCE(pg.first_name, cg.company_name) AS first_name,
+    COALESCE(pg.last_name, '') AS last_name,
     g.phone,
     g.email,
     sr.stay_id,
@@ -86,6 +86,8 @@ SELECT
     gf.rating AS feedback_rating,
     gf.comments AS feedback_comments
 FROM GUESTS g
+LEFT JOIN PRIVATE_GUEST pg ON g.guest_id = pg.guest_id
+LEFT JOIN CORPORATE_GUEST cg ON g.guest_id = cg.guest_id
 JOIN STAY_RECORD sr ON g.guest_id = sr.guest_id
 LEFT JOIN PAYMENT p ON sr.stay_id = p.stay_id
 LEFT JOIN GUEST_FEEDBACK gf ON sr.stay_id = gf.stay_id;

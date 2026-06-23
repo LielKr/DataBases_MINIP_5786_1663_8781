@@ -180,10 +180,15 @@ INSERT INTO PRIVATE_GUEST (guest_id, first_name, last_name, id_or_passport_numbe
 SELECT guest_id, first_name, last_name, passport_number, NULL
 FROM GUESTS;
 
+-- מחיקת העמודות המיותרות מטבלת GUESTS לאחר העתקתן ל-PRIVATE_GUEST
+ALTER TABLE GUESTS DROP COLUMN first_name;
+ALTER TABLE GUESTS DROP COLUMN last_name;
+ALTER TABLE GUESTS DROP COLUMN passport_number;
+
 -- נתוני אורחים עסקיים (2 אורחים חדשים)
-INSERT INTO GUESTS (guest_id, first_name, last_name, passport_number, phone, email, registration_date, created_at) VALUES
-(51001, 'Rachel', 'Cohen', 'C111111', '0501111111', 'rachel@techsol.com', '2024-05-01', '2024-05-01'),
-(51002, 'Daniel', 'Levi', 'C222222', '0502222222', 'daniel@globaltrade.com', '2024-05-10', '2024-05-10');
+INSERT INTO GUESTS (guest_id, phone, email, registration_date, created_at) VALUES
+(51001, '0501111111', 'rachel@techsol.com', '2024-05-01', '2024-05-01'),
+(51002, '0502222222', 'daniel@globaltrade.com', '2024-05-10', '2024-05-10');
 
 INSERT INTO CORPORATE_GUEST (guest_id, company_name, company_registration_number, contact_person_name) VALUES
 (51001, 'Tech Solutions Ltd', 'CR-2024-001', 'Rachel Cohen'),

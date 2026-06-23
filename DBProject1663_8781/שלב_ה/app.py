@@ -182,10 +182,15 @@ def rooms_delete(id):
 @app.route('/guests')
 def guests_list():
     rows = query_db("""
-        SELECT g.guest_id, g.first_name, g.last_name, g.passport_number,
+        SELECT g.guest_id, 
+               COALESCE(pg.first_name, cg.company_name) AS first_name,
+               COALESCE(pg.last_name, '') AS last_name,
+               COALESCE(pg.id_or_passport_number, cg.company_registration_number) AS passport_number,
                g.phone, g.email, g.registration_date,
                lt.tier_name AS loyalty_tier
         FROM guests g
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         LEFT JOIN guest_loyalty gl ON g.guest_id = gl.guest_id
         LEFT JOIN loyalty_tier lt ON gl.tier_id = lt.tier_id
         ORDER BY g.guest_id
@@ -198,11 +203,16 @@ def guests_add():
     if request.method == 'POST':
         try:
             new_id = query_db("SELECT COALESCE(MAX(guest_id),0)+1 AS nid FROM guests", fetchone=True)['nid']
+            # Insert into base table GUESTS
             execute_db(
-                "INSERT INTO guests (guest_id, first_name, last_name, passport_number, phone, email, registration_date, created_at) "
-                "VALUES (%s,%s,%s,%s,%s,%s, CURRENT_DATE, CURRENT_DATE)",
-                (new_id, request.form['first_name'], request.form['last_name'],
-                 request.form['passport_number'], request.form['phone'], request.form['email']))
+                "INSERT INTO guests (guest_id, phone, email, registration_date, created_at) "
+                "VALUES (%s,%s,%s, CURRENT_DATE, CURRENT_DATE)",
+                (new_id, request.form['phone'], request.form['email']))
+            # Insert into subclass table PRIVATE_GUEST (defaulting GUI addition to private guest)
+            execute_db(
+                "INSERT INTO private_guest (guest_id, first_name, last_name, id_or_passport_number, gender) "
+                "VALUES (%s,%s,%s,%s, NULL)",
+                (new_id, request.form['first_name'], request.form['last_name'], request.form['passport_number']))
             flash('Guest added successfully!', 'success')
             return redirect(url_for('guests_list'))
         except Exception as e:
@@ -214,23 +224,45 @@ def guests_add():
 def guests_edit(id):
     if request.method == 'POST':
         try:
+            # Update base table
             execute_db(
-                "UPDATE guests SET first_name=%s, last_name=%s, passport_number=%s, phone=%s, email=%s "
-                "WHERE guest_id=%s",
-                (request.form['first_name'], request.form['last_name'],
-                 request.form['passport_number'], request.form['phone'],
-                 request.form['email'], id))
+                "UPDATE guests SET phone=%s, email=%s WHERE guest_id=%s",
+                (request.form['phone'], request.form['email'], id))
+            # Update private_guest if it exists
+            is_private = query_db("SELECT 1 FROM private_guest WHERE guest_id=%s", (id,), fetchone=True)
+            if is_private:
+                execute_db(
+                    "UPDATE private_guest SET first_name=%s, last_name=%s, id_or_passport_number=%s WHERE guest_id=%s",
+                    (request.form['first_name'], request.form['last_name'], request.form['passport_number'], id))
+            else:
+                # If it's a corporate guest, update contact person if fields match
+                execute_db(
+                    "UPDATE corporate_guest SET contact_person_name=%s WHERE guest_id=%s",
+                    (request.form['first_name'] + ' ' + request.form['last_name'], id))
             flash('Guest updated!', 'success')
             return redirect(url_for('guests_list'))
         except Exception as e:
             flash(f'Error: {e}', 'danger')
-    row = query_db("SELECT * FROM guests WHERE guest_id=%s", (id,), fetchone=True)
+    row = query_db("""
+        SELECT g.guest_id, 
+               COALESCE(pg.first_name, cg.company_name) AS first_name,
+               COALESCE(pg.last_name, '') AS last_name,
+               COALESCE(pg.id_or_passport_number, cg.company_registration_number) AS passport_number,
+               g.phone, g.email
+        FROM guests g
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
+        WHERE g.guest_id=%s
+    """, (id,), fetchone=True)
     return render_template('guests_form.html', row=row)
 
 
 @app.route('/guests/delete/<int:id>', methods=['POST'])
 def guests_delete(id):
     try:
+        # Delete from subclass tables first to avoid foreign key errors
+        execute_db("DELETE FROM private_guest WHERE guest_id=%s", (id,))
+        execute_db("DELETE FROM corporate_guest WHERE guest_id=%s", (id,))
         execute_db("DELETE FROM guests WHERE guest_id=%s", (id,))
         flash('Guest deleted!', 'success')
     except Exception as e:
@@ -298,10 +330,12 @@ def bookings_list():
     rows = query_db("""
         SELECT b.booking_id, b.check_in_date, b.check_out_date, b.total_price,
                b.num_guests, b.booking_date, b.booking_status,
-               g.first_name || ' ' || g.last_name AS guest_name,
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS guest_name,
                bs.source_name
         FROM bookings b
         JOIN guests g ON b.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         JOIN booking_sources bs ON b.source_id = bs.source_id
         ORDER BY b.booking_id DESC
     """)
@@ -310,7 +344,14 @@ def bookings_list():
 
 @app.route('/bookings/add', methods=['GET', 'POST'])
 def bookings_add():
-    guests = query_db("SELECT guest_id, first_name || ' ' || last_name AS name FROM guests ORDER BY last_name")
+    guests = query_db("""
+        SELECT g.guest_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS name 
+        FROM guests g
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
+        ORDER BY COALESCE(pg.last_name, cg.company_name)
+    """)
     sources = query_db("SELECT source_id, source_name FROM booking_sources ORDER BY source_name")
     if request.method == 'POST':
         try:
@@ -330,7 +371,14 @@ def bookings_add():
 
 @app.route('/bookings/edit/<int:id>', methods=['GET', 'POST'])
 def bookings_edit(id):
-    guests = query_db("SELECT guest_id, first_name || ' ' || last_name AS name FROM guests ORDER BY last_name")
+    guests = query_db("""
+        SELECT g.guest_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS name 
+        FROM guests g
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
+        ORDER BY COALESCE(pg.last_name, cg.company_name)
+    """)
     sources = query_db("SELECT source_id, source_name FROM booking_sources ORDER BY source_name")
     if request.method == 'POST':
         try:
@@ -369,11 +417,13 @@ def room_assignments_list():
     rows = query_db("""
         SELECT ra.assignment_id, ra.assigned_at,
                ra.booking_id,
-               g.first_name || ' ' || g.last_name AS guest_name,
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS guest_name,
                r.room_id, rt.type_name, r.floor
         FROM room_assignments ra
         JOIN bookings b ON ra.booking_id = b.booking_id
         JOIN guests g ON b.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         JOIN rooms r ON ra.room_id = r.room_id
         JOIN room_types rt ON r.type_id = rt.type_id
         ORDER BY ra.assignment_id DESC
@@ -384,8 +434,12 @@ def room_assignments_list():
 @app.route('/room_assignments/add', methods=['GET', 'POST'])
 def room_assignments_add():
     bookings = query_db("""
-        SELECT b.booking_id, g.first_name || ' ' || g.last_name || ' (' || b.check_in_date || ')' AS label
-        FROM bookings b JOIN guests g ON b.guest_id = g.guest_id
+        SELECT b.booking_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) || ' (' || b.check_in_date || ')' AS label
+        FROM bookings b 
+        JOIN guests g ON b.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         ORDER BY b.booking_id DESC
     """)
     rooms = query_db("""
@@ -424,11 +478,13 @@ def room_assignments_delete(id):
 def checkins_list():
     rows = query_db("""
         SELECT cio.log_id, cio.booking_id, cio.actual_check_in, cio.actual_check_out,
-               g.first_name || ' ' || g.last_name AS guest_name,
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS guest_name,
                b.check_in_date AS planned_in, b.check_out_date AS planned_out
         FROM check_ins_outs cio
         JOIN bookings b ON cio.booking_id = b.booking_id
         JOIN guests g ON b.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         ORDER BY cio.log_id DESC
     """)
     return render_template('checkins.html', rows=rows)
@@ -437,8 +493,12 @@ def checkins_list():
 @app.route('/checkins/add', methods=['GET', 'POST'])
 def checkins_add():
     bookings = query_db("""
-        SELECT b.booking_id, g.first_name || ' ' || g.last_name || ' (' || b.check_in_date || ')' AS label
-        FROM bookings b JOIN guests g ON b.guest_id = g.guest_id
+        SELECT b.booking_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) || ' (' || b.check_in_date || ')' AS label
+        FROM bookings b 
+        JOIN guests g ON b.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         WHERE b.booking_status = 'CONFIRMED'
         ORDER BY b.booking_id DESC
     """)
@@ -528,10 +588,13 @@ def loyalty_tiers_delete(id):
 @app.route('/guest_loyalty')
 def guest_loyalty_list():
     rows = query_db("""
-        SELECT gl.guest_id, g.first_name || ' ' || g.last_name AS guest_name,
+        SELECT gl.guest_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS guest_name,
                lt.tier_name, gl.membership_number, gl.points_balance, gl.status
         FROM guest_loyalty gl
         JOIN guests g ON gl.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         JOIN loyalty_tier lt ON gl.tier_id = lt.tier_id
         ORDER BY gl.guest_id
     """)
@@ -541,10 +604,13 @@ def guest_loyalty_list():
 @app.route('/guest_loyalty/add', methods=['GET', 'POST'])
 def guest_loyalty_add():
     guests = query_db("""
-        SELECT g.guest_id, g.first_name || ' ' || g.last_name AS name
+        SELECT g.guest_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS name
         FROM guests g
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         WHERE g.guest_id NOT IN (SELECT guest_id FROM guest_loyalty)
-        ORDER BY g.last_name
+        ORDER BY COALESCE(pg.last_name, cg.company_name)
     """)
     tiers = query_db("SELECT tier_id, tier_name FROM loyalty_tier ORDER BY tier_id")
     if request.method == 'POST':
@@ -579,10 +645,12 @@ def guest_loyalty_delete(id):
 def stay_records_list():
     rows = query_db("""
         SELECT sr.stay_id, sr.check_in_date, sr.check_out_date,
-               g.first_name || ' ' || g.last_name AS guest_name,
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS guest_name,
                sr.booking_id
         FROM stay_record sr
         JOIN guests g ON sr.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         ORDER BY sr.stay_id DESC
     """)
     return render_template('stay_records.html', rows=rows)
@@ -590,7 +658,14 @@ def stay_records_list():
 
 @app.route('/stay_records/add', methods=['GET', 'POST'])
 def stay_records_add():
-    guests = query_db("SELECT guest_id, first_name || ' ' || last_name AS name FROM guests ORDER BY last_name")
+    guests = query_db("""
+        SELECT g.guest_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS name 
+        FROM guests g
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
+        ORDER BY COALESCE(pg.last_name, cg.company_name)
+    """)
     bookings = query_db("SELECT booking_id FROM bookings ORDER BY booking_id DESC")
     if request.method == 'POST':
         try:
@@ -626,11 +701,13 @@ def stay_records_delete(id):
 def payments_list():
     rows = query_db("""
         SELECT p.payment_id, p.payment_date, p.amount, p.payment_method, p.payment_status,
-               g.first_name || ' ' || g.last_name AS guest_name,
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS guest_name,
                sr.stay_id
         FROM payment p
         JOIN stay_record sr ON p.stay_id = sr.stay_id
         JOIN guests g ON sr.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         ORDER BY p.payment_id DESC
     """)
     return render_template('payments.html', rows=rows)
@@ -639,8 +716,12 @@ def payments_list():
 @app.route('/payments/add', methods=['GET', 'POST'])
 def payments_add():
     stays = query_db("""
-        SELECT sr.stay_id, g.first_name || ' ' || g.last_name || ' (Stay #' || sr.stay_id || ')' AS label
-        FROM stay_record sr JOIN guests g ON sr.guest_id = g.guest_id
+        SELECT sr.stay_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) || ' (Stay #' || sr.stay_id || ')' AS label
+        FROM stay_record sr 
+        JOIN guests g ON sr.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         ORDER BY sr.stay_id DESC
     """)
     if request.method == 'POST':
@@ -675,10 +756,12 @@ def payments_delete(id):
 def feedback_list():
     rows = query_db("""
         SELECT gf.stay_id, gf.rating, gf.comments, gf.feedback_date,
-               g.first_name || ' ' || g.last_name AS guest_name
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS guest_name
         FROM guest_feedback gf
         JOIN stay_record sr ON gf.stay_id = sr.stay_id
         JOIN guests g ON sr.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         ORDER BY gf.feedback_date DESC
     """)
     return render_template('feedback.html', rows=rows)
@@ -687,9 +770,12 @@ def feedback_list():
 @app.route('/feedback/add', methods=['GET', 'POST'])
 def feedback_add():
     stays = query_db("""
-        SELECT sr.stay_id, g.first_name || ' ' || g.last_name || ' (Stay #' || sr.stay_id || ')' AS label
+        SELECT sr.stay_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) || ' (Stay #' || sr.stay_id || ')' AS label
         FROM stay_record sr
         JOIN guests g ON sr.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         WHERE sr.stay_id NOT IN (SELECT stay_id FROM guest_feedback)
         ORDER BY sr.stay_id DESC
     """)
@@ -728,11 +814,14 @@ def queries_page():
 @app.route('/queries/upcoming_bookings')
 def query_upcoming_bookings():
     rows = query_db("""
-        SELECT b.booking_id, g.first_name || ' ' || g.last_name AS guest_name,
+        SELECT b.booking_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS guest_name,
                bs.source_name, b.check_in_date, b.check_out_date,
                b.num_guests, b.total_price, b.booking_status
         FROM bookings b
         JOIN guests g ON b.guest_id = g.guest_id
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         JOIN booking_sources bs ON b.source_id = bs.source_id
         WHERE b.check_in_date >= CURRENT_DATE AND b.booking_status = 'CONFIRMED'
         ORDER BY b.check_in_date ASC
@@ -782,13 +871,15 @@ def query_source_performance():
 @app.route('/queries/guest_spending')
 def query_guest_spending():
     rows = query_db("""
-        SELECT g.first_name || ' ' || g.last_name AS guest_name,
+        SELECT COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS guest_name,
                g.phone, g.email,
                COUNT(b.booking_id) AS total_bookings,
                COALESCE(SUM(b.total_price), 0) AS total_spent
         FROM guests g
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
         LEFT JOIN bookings b ON g.guest_id = b.guest_id
-        GROUP BY g.guest_id, g.first_name, g.last_name, g.phone, g.email
+        GROUP BY g.guest_id, pg.first_name, pg.last_name, cg.company_name, g.phone, g.email
         ORDER BY total_spent DESC
     """)
     return render_template('query_result.html', title='Guest Spending Summary',
@@ -800,7 +891,14 @@ def query_guest_spending():
 
 @app.route('/queries/calculate_discount', methods=['GET', 'POST'])
 def query_calculate_discount():
-    guests = query_db("SELECT guest_id, first_name || ' ' || last_name AS name FROM guests ORDER BY last_name")
+    guests = query_db("""
+        SELECT g.guest_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS name 
+        FROM guests g
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
+        ORDER BY COALESCE(pg.last_name, cg.company_name)
+    """)
     result = None
     if request.method == 'POST':
         try:
@@ -809,8 +907,13 @@ def query_calculate_discount():
             result = query_db(
                 "SELECT fn_calculate_guest_discount(%s, %s) AS discounted_price",
                 (guest_id, price), fetchone=True)
-            guest_name = query_db("SELECT first_name || ' ' || last_name AS n FROM guests WHERE guest_id=%s",
-                                  (guest_id,), fetchone=True)['n']
+            guest_name = query_db("""
+                SELECT COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS n 
+                FROM guests g
+                LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+                LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
+                WHERE g.guest_id=%s
+            """, (guest_id,), fetchone=True)['n']
             result['guest_name'] = guest_name
             result['original_price'] = float(price)
         except Exception as e:
@@ -843,7 +946,14 @@ def query_available_rooms():
 
 @app.route('/queries/register_loyalty', methods=['GET', 'POST'])
 def query_register_loyalty():
-    guests = query_db("SELECT guest_id, first_name || ' ' || last_name AS name FROM guests ORDER BY last_name")
+    guests = query_db("""
+        SELECT g.guest_id, 
+               COALESCE(pg.first_name || ' ' || pg.last_name, cg.company_name) AS name 
+        FROM guests g
+        LEFT JOIN private_guest pg ON g.guest_id = pg.guest_id
+        LEFT JOIN corporate_guest cg ON g.guest_id = cg.guest_id
+        ORDER BY COALESCE(pg.last_name, cg.company_name)
+    """)
     message = None
     if request.method == 'POST':
         try:

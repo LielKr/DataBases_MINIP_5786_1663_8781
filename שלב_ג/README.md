@@ -106,10 +106,10 @@
 
 ## 4. החלטות אינטגרציה
 
-### 🔹 החלטה 1 – טבלת GUESTS
-החלטנו **להשאיר** את השדות `first_name`, `last_name`, `passport_number` בטבלת `GUESTS` המקורית ולא למחוק אותם, למרות שהם קיימים גם ב-`PRIVATE_GUEST`.
+### 🔹 החלטה 1 – טבלת GUESTS ומניעת כפילויות
+החלטנו **למחוק** את השדות `first_name`, `last_name` ו-`passport_number` מטבלת `GUESTS` המקורית לאחר העתקתם לטבלת הירושה `PRIVATE_GUEST`, וזאת על מנת לשמור על ירושה נקייה מסוג Class Table Inheritance ולמנוע כפילות מידע בבסיס הנתונים המשולב.
 
-**הסיבה:** השאילתות משלב ב' משתמשות בשדות אלה ישירות מ-`GUESTS` (לדוגמה: `g.first_name || ' ' || g.last_name`). לפי ההנחיות (סעיף 7), השאילתות חייבות להמשיך לעבוד על בסיס הנתונים המשולב. הוספנו עמודת `created_at` ל-`GUESTS`.
+**הפתרון:** כדי ששאילתות המערכת ומבטים המצפים לשדות אלו ימשיכו לפעול בצורה חלקה, עדכנו את המבט `v_guest_stay_summary` כך שיבצע `LEFT JOIN` מול טבלאות הבן וישתמש ב-`COALESCE` כדי לגזור את השם והדרכון באופן דינמי (עבור אורחים פרטיים יוחזר שמם, ועבור אורחים עסקיים יוחזר שם החברה). בנוסף הוספנו עמודת `created_at` ל-`GUESTS`.
 
 ### 🔹 החלטה 2 – BOOKINGS מול STAY_RECORD
 אלו **שני מושגים שונים**: `BOOKINGS` = הזמנה (לפני הגעה), `STAY_RECORD` = שהייה בפועל. שמרנו את שתי הטבלאות עם קשר ביניהן (`booking_id` ב-`STAY_RECORD`). כך ניתן לעקוב אחרי הזמנות שטרם מומשו לשהייה.
@@ -229,12 +229,24 @@ ORDER BY total_revenue DESC;
 ```sql
 CREATE OR REPLACE VIEW v_guest_stay_summary AS
 SELECT
-    g.guest_id, g.first_name, g.last_name, g.phone, g.email,
-    sr.stay_id, sr.check_in_date, sr.check_out_date,
+    g.guest_id,
+    COALESCE(pg.first_name, cg.company_name) AS first_name,
+    COALESCE(pg.last_name, '') AS last_name,
+    g.phone,
+    g.email,
+    sr.stay_id,
+    sr.check_in_date,
+    sr.check_out_date,
     (sr.check_out_date - sr.check_in_date) AS nights,
-    p.payment_id, p.amount AS payment_amount, p.payment_method, p.payment_status,
-    gf.rating AS feedback_rating, gf.comments AS feedback_comments
+    p.payment_id,
+    p.amount AS payment_amount,
+    p.payment_method,
+    p.payment_status,
+    gf.rating AS feedback_rating,
+    gf.comments AS feedback_comments
 FROM GUESTS g
+LEFT JOIN PRIVATE_GUEST pg ON g.guest_id = pg.guest_id
+LEFT JOIN CORPORATE_GUEST cg ON g.guest_id = cg.guest_id
 JOIN STAY_RECORD sr ON g.guest_id = sr.guest_id
 LEFT JOIN PAYMENT p ON sr.stay_id = p.stay_id
 LEFT JOIN GUEST_FEEDBACK gf ON sr.stay_id = gf.stay_id;
