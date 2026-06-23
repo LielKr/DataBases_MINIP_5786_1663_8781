@@ -80,7 +80,7 @@ url: https://ai.studio/apps/9bac2e5d-574d-447b-bb42-d4fb6f1da2ec
 
 # 📘 Data Dictionary
 
-## 1. `ROOM_TYPES` — סוגי חדרים
+## 1. `ROOM_TYPES` - סוגי חדרים
 
 ### תיאור הטבלה
 
@@ -129,7 +129,7 @@ CREATE TABLE ROOM_TYPES
 
 ---
 
-## 2. `ROOMS` — חדרים
+## 2. `ROOMS` - חדרים
 
 ### תיאור הטבלה
 
@@ -183,7 +183,7 @@ CREATE TABLE ROOMS
 
 ---
 
-## 3. `BOOKING_SOURCES` — מקורות הזמנה
+## 3. `BOOKING_SOURCES` - מקורות הזמנה
 
 ### תיאור הטבלה
 
@@ -234,7 +234,7 @@ CREATE TABLE BOOKING_SOURCES
 
 ---
 
-## 4. `GUESTS` — אורחים
+## 4. `GUESTS` - אורחים
 
 ### תיאור הטבלה
 
@@ -292,7 +292,7 @@ CREATE TABLE GUESTS
 
 ---
 
-## 5. `BOOKINGS` — הזמנות
+## 5. `BOOKINGS` - הזמנות
 
 ### תיאור הטבלה
 
@@ -359,7 +359,7 @@ CREATE TABLE BOOKINGS
 
 ---
 
-## 6. `ROOM_ASSIGNMENTS` — שיוך חדרים להזמנות
+## 6. `ROOM_ASSIGNMENTS` - שיוך חדרים להזמנות
 
 ### תיאור הטבלה
 
@@ -412,7 +412,7 @@ CREATE TABLE ROOM_ASSIGNMENTS
 
 ---
 
-## 7. `CHECK_INS_OUTS` — כניסה ויציאה בפועל
+## 7. `CHECK_INS_OUTS` - כניסה ויציאה בפועל
 
 ### תיאור הטבלה
 
